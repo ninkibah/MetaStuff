@@ -2,13 +2,17 @@
 #include "StringCast.h"
 #include "template_helpers.h"
 
+#include <Meta.h>
+
+
+
 template <typename Class>
 void serialize(const Class& obj, Json::Value& root)
 {
     for_tuple([&obj, &root](const auto& member)
     {
         Json::cast(member.get(obj), root[member.getName()]);
-    }, Class::getMembers());
+    }, Meta::getMembers<Class>());
 }
 
 
@@ -21,7 +25,7 @@ void deserialize(Class& obj, const Json::Value& root)
         MemberT value;
         Json::fromValue(value, root[member.getName()]);
         member.set(obj, value);
-    }, Class::getMembers());
+    }, Meta::getMembers<Class>());
 }
 
 namespace Json

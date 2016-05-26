@@ -2,8 +2,11 @@
 
 #include <json/json.h>
 
-#include "Person.h"
 #include "JsonCast.h"
+#include "Person.h"
+
+struct Unregistered
+{};
 
 int main()
 {
@@ -23,7 +26,12 @@ int main()
     Person person2;
     deserialize(person2, root); // set values from Json::Value
 
+    std::cout << "Serialized person:";
     std::cout << root << std::endl;
 
-    system("pause");
+    // We can serialize ungregistered classes too! They'll just produce empty value;
+    Json::Value root2;
+    Unregistered unregistered;
+    serialize(unregistered, root2);
+    std::cout << "Serialization of unregistered class produces this: " << root2 << std::endl;
 }

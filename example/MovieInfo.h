@@ -5,19 +5,15 @@
 struct MovieInfo {
     std::string name;
     float rating;
-
-// meta
-    inline static decltype(auto) getMembers();
 };
 
+#include <Meta.h>
 
-#include <MemberPtr.h>
-
-inline decltype(auto) MovieInfo::getMembers()
+template <>
+inline decltype(auto) Meta::getMembers<MovieInfo>()
 {
-    using namespace std::string_literals;
     static auto memberPtrs = std::make_tuple(
-    member("name"s,   &MovieInfo::name ),
-    member("rating"s, &MovieInfo::rating));
+        member("name", &MovieInfo::name),
+        member("rating", &MovieInfo::rating));
     return (memberPtrs);
 }

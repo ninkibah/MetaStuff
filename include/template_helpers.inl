@@ -37,3 +37,9 @@ void for_tuple(F&& f, TupleT&& tuple)
         },
         std::forward<TupleT>(tuple));
 }
+
+template <typename F>
+void for_tuple(F&& /* f */, std::tuple<>&& /* tuple */)
+{
+    // do nothing
+}

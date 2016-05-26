@@ -11,4 +11,7 @@ void for_each_arg(F&& f, Args&&... args);
 template <typename F, typename TupleT>
 void for_tuple(F&& f, TupleT&& tuple);
 
+template <typename F>
+void for_tuple(F&& f, std::tuple<>&& tuple);
+
 #include "template_helpers.inl"

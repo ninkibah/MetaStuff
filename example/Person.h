@@ -24,20 +24,20 @@ struct Person {
     float salary;
     std::string name;
     std::unordered_map<std::string, std::vector<MovieInfo>> favouriteMovies;
-    
-// meta stuff
-    inline static decltype(auto) getMembers();
 };
 
-#include <MemberPtr.h>
+// You need to specialize template function Meta::getMember<T> like this
+// add "friend struct Meta;" to any class to be able to use private members
+// in getMembers<T> function. 
 
-inline decltype(auto) Person::getMembers()
+#include <Meta.h>
+template <>
+inline decltype(auto) Meta::getMembers<Person>()
 {
-    using namespace std::string_literals;
     static auto memberPtrs = std::make_tuple(
-        member("age"s,             &Person::getAge, &Person::setAge),
-        member("salary"s,          &Person::salary),
-        member("name"s,            &Person::name),
-        member("favouriteMovies"s, &Person::favouriteMovies));
+        member("age", &Person::getAge, &Person::setAge),
+        member("salary", &Person::salary),
+        member("name", &Person::name),
+        member("favouriteMovies", &Person::favouriteMovies));
     return (memberPtrs); // return by reference!
 }

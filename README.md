@@ -5,6 +5,8 @@ This is the code I use in my game for all serialization/deserialization/introspe
 At the moment this code is not fully developed, so it's not recommended to use it for anything really serious as lots of stuff can change!
 I put this code mostly for other people to learn from and maybe help me expand this to a pretty good lib. Still, use it as you like, it's MIT licensed after all.
 
+This library is still in development and all suggestions are welcome!
+
 Requirements
 ----
 - Compiler with C++14 support (I managed to compile it with Visual Studio 2015, GCC 5.0, Clang 3.8)
@@ -44,24 +46,27 @@ struct MovieInfo {
 };
 ```
 And you want to serialize them to some format (for example, JSON). Or perhaps you want to add some GUI which will let you edit each member easily.
-No problem, just add these static functions,
+No problem, just write these static functions,
 
 ```c++
-inline decltype(auto) Person::getMembers()
+#include "Meta.h"
+template <>
+inline decltype(auto) Meta::getMembers<Person>()
 {
     static auto memberPtrs = std::make_tuple(
-        member("age",             &Person::getAge, &Person::setAge),
-        member("salary",          &Person::salary),
-        member("name",            &Person::name),
+        member("age", &Person::getAge, &Person::setAge),
+        member("salary", &Person::salary),
+        member("name", &Person::name),
         member("favouriteMovies", &Person::favouriteMovies));
     return (memberPtrs); // return by reference!
 }
 
-inline decltype(auto) MovieInfo::getMembers()
+template <>
+inline decltype(auto) Meta::getMembers<MovieInfo>()
 {
     static auto memberPtrs = std::make_tuple(
-    member("name",   &MovieInfo::name ),
-    member("rating", &MovieInfo::rating));
+        member("name", &MovieInfo::name),
+        member("rating", &MovieInfo::rating));
     return (memberPtrs);
 }
 ```
@@ -86,14 +91,18 @@ If you provide MemberPtr with getters and setters it will use these functions fo
 In general getMembers() function should have a following form and be put in header (it's pretty awkward, but maybe it'll improve):
 
 ```c++
-inline decltype(auto) YourClass::getMembers()
+#include <Meta.h>
+template <>
+inline decltype(auto) Meta::getMembers<Person>()
 {
     static auto memberPtrs = std::make_tuple(
         member("someMember", &Class::someMember),
         ...);
-    return (memberPtrs); // return by reference!
+    return (memberPtrs); // don't forget braces, they force return by reference!
 }
 ```
+
+You can make Meta class a friend to your registered class to be able to add private members to getMembers function specialization.
 
 License
 ---
