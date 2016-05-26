@@ -87,17 +87,17 @@ MemberPtr has the following functions:
 
 If you provide MemberPtr with getters and setters it will use these functions for getting/setting members, otherwise the member will be accessed directly with pointer to member.
 
-In general Meta::getMembers<T>() template function specialization should have a following form and be put in header with you class:
+In general Meta::getMembers<T>() template function specialization should have a following form and be put in header with you class (see comments in Meta.h for more info):
 
 ```c++
 #include <Meta.h>
 template <>
-inline auto& Meta::getMembers<Person>()
+inline auto& Meta::getMembers<SomeClass>()
 {
-    static auto memberPtrs = std::make_tuple(
-        member("someMember", &Class::someMember),
+    static auto members = std::make_tuple(
+        member("someMember", &SomeClass::someMember),
         ...);
-    return memberPtrs;
+    return members;
 }
 ```
 

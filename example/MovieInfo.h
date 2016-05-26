@@ -12,8 +12,8 @@ struct MovieInfo {
 template <>
 inline auto& Meta::getMembers<MovieInfo>()
 {
-    static auto memberPtrs = std::make_tuple(
+    static auto members = std::make_tuple(
         member("name", &MovieInfo::name),
         member("rating", &MovieInfo::rating));
-    return memberPtrs;
+    return members;
 }

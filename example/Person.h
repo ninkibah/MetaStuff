@@ -33,10 +33,10 @@ struct Person {
 template <>
 inline auto& Meta::getMembers<Person>()
 {
-    static auto memberPtrs = std::make_tuple(
+    static auto members = std::make_tuple(
         member("age", &Person::getAge, &Person::setAge),
         member("salary", &Person::salary),
         member("name", &Person::name),
         member("favouriteMovies", &Person::favouriteMovies));
-    return memberPtrs;
+    return members;
 }
