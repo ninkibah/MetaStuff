@@ -26,12 +26,12 @@ struct Person {
     std::unordered_map<std::string, std::vector<MovieInfo>> favouriteMovies;
     
 // meta stuff
-    static decltype(auto) getMembers();
+    inline static decltype(auto) getMembers();
 };
 
 #include <MemberPtr.h>
 
-decltype(auto) Person::getMembers()
+inline decltype(auto) Person::getMembers()
 {
     using namespace std::string_literals;
     static auto memberPtrs = std::make_tuple(

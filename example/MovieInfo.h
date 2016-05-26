@@ -7,13 +7,13 @@ struct MovieInfo {
     float rating;
 
 // meta
-    static decltype(auto) getMembers();
+    inline static decltype(auto) getMembers();
 };
 
 
 #include <MemberPtr.h>
 
-decltype(auto) MovieInfo::getMembers()
+inline decltype(auto) MovieInfo::getMembers()
 {
     using namespace std::string_literals;
     static auto memberPtrs = std::make_tuple(

@@ -47,7 +47,7 @@ And you want to serialize them to some format (for example, JSON). Or perhaps yo
 No problem, just add these static functions,
 
 ```c++
-decltype(auto) Person::getMembers()
+inline decltype(auto) Person::getMembers()
 {
     static auto memberPtrs = std::make_tuple(
         member("age",             &Person::getAge, &Person::setAge),
@@ -57,7 +57,7 @@ decltype(auto) Person::getMembers()
     return (memberPtrs); // return by reference!
 }
 
-decltype(auto) MovieInfo::getMembers()
+inline decltype(auto) MovieInfo::getMembers()
 {
     static auto memberPtrs = std::make_tuple(
     member("name",   &MovieInfo::name ),
@@ -82,6 +82,18 @@ MemberPtr has the following functions:
 - void set(const Class& obj, const T& value) - sets value to member
 
 If you provide MemberPtr with getters and setters it will use these functions for getting/setting members, otherwise the member will be accessed directly with pointer to member.
+
+In general getMembers() function should have a following form and be put in header (it's pretty awkward, but maybe it'll improve):
+
+```c++
+inline decltype(auto) YourClass::getMembers()
+{
+    static auto memberPtrs = std::make_tuple(
+        member("someMember", &Class::someMember),
+        ...);
+    return (memberPtrs); // return by reference!
+}
+```
 
 License
 ---
