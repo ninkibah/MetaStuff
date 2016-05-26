@@ -11,7 +11,8 @@ void for_each_arg(F&& f, Args&&... args);
 template <typename F, typename TupleT>
 void for_tuple(F&& f, TupleT&& tuple);
 
+// overload for empty tuple which does nothing
 template <typename F>
-void for_tuple(F&& f, std::tuple<>&& tuple);
+void for_tuple(F&& f, std::tuple<>& tuple);
 
 #include "template_helpers.inl"

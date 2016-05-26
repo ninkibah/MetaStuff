@@ -39,7 +39,7 @@ void for_tuple(F&& f, TupleT&& tuple)
 }
 
 template <typename F>
-void for_tuple(F&& /* f */, std::tuple<>&& /* tuple */)
+void for_tuple(F&& /* f */, std::tuple<>& /* tuple */)
 {
     // do nothing
 }

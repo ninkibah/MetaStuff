@@ -10,10 +10,10 @@ struct MovieInfo {
 #include <Meta.h>
 
 template <>
-inline decltype(auto) Meta::getMembers<MovieInfo>()
+inline auto& Meta::getMembers<MovieInfo>()
 {
     static auto memberPtrs = std::make_tuple(
         member("name", &MovieInfo::name),
         member("rating", &MovieInfo::rating));
-    return (memberPtrs);
+    return memberPtrs;
 }

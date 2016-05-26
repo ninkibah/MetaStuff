@@ -51,30 +51,29 @@ No problem, just write these static functions,
 ```c++
 #include "Meta.h"
 template <>
-inline decltype(auto) Meta::getMembers<Person>()
+inline auto& Meta::getMembers<Person>()
 {
     static auto memberPtrs = std::make_tuple(
         member("age", &Person::getAge, &Person::setAge),
         member("salary", &Person::salary),
         member("name", &Person::name),
         member("favouriteMovies", &Person::favouriteMovies));
-    return (memberPtrs); // return by reference!
-}
+    return memberPtrs; 
 
 template <>
-inline decltype(auto) Meta::getMembers<MovieInfo>()
+inline auto& Meta::getMembers<MovieInfo>()
 {
     static auto memberPtrs = std::make_tuple(
         member("name", &MovieInfo::name),
         member("rating", &MovieInfo::rating));
-    return (memberPtrs);
+    return memberPtrs;
 }
 ```
 Note that you can either use pointers to members or pointers to getters/setters. They will be used for doing stuff with members of registered classes. (for reading and setting values).
 
 and now you can call do this:
 ```c++
-forTuple(/* your lambda */, Class::getMembers());
+forTuple(/* your lambda */, Meta::getMembers<Class>());
 ```
 
 Your lambda should have one parameter which will be an instance of MemberPtr. Calling forTuple with T::getMembers() gives you ability to do something with each registered member of class T.
@@ -88,17 +87,17 @@ MemberPtr has the following functions:
 
 If you provide MemberPtr with getters and setters it will use these functions for getting/setting members, otherwise the member will be accessed directly with pointer to member.
 
-In general getMembers() function should have a following form and be put in header (it's pretty awkward, but maybe it'll improve):
+In general Meta::getMembers<T>() template function specialization should have a following form and be put in header with you class:
 
 ```c++
 #include <Meta.h>
 template <>
-inline decltype(auto) Meta::getMembers<Person>()
+inline auto& Meta::getMembers<Person>()
 {
     static auto memberPtrs = std::make_tuple(
         member("someMember", &Class::someMember),
         ...);
-    return (memberPtrs); // don't forget braces, they force return by reference!
+    return memberPtrs;
 }
 ```
 

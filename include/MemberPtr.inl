@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <cassert>
 
 template <typename Class, typename T>
 MemberPtr<Class, T>::MemberPtr(std::string&& name, 
