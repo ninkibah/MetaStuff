@@ -53,20 +53,20 @@ No problem, just write these static functions,
 template <>
 inline const auto& Meta::getMembers<Person>()
 {
-    static auto memberPtrs = std::make_tuple(
+    static auto members = std::make_tuple(
         member("age", &Person::getAge, &Person::setAge),
         member("salary", &Person::salary),
         member("name", &Person::name),
         member("favouriteMovies", &Person::favouriteMovies));
-    return memberPtrs; 
+    return members; 
 
 template <>
 inline const auto& Meta::getMembers<MovieInfo>()
 {
-    static auto memberPtrs = std::make_tuple(
+    static auto members = std::make_tuple(
         member("name", &MovieInfo::name),
         member("rating", &MovieInfo::rating));
-    return memberPtrs;
+    return members;
 }
 ```
 Note that you can either use pointers to members or pointers to getters/setters. They will be used for doing stuff with members of registered classes. (for reading and setting values).
