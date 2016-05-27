@@ -50,7 +50,7 @@ int main()
     }
 
     // checking if class has a member
-    if (!Meta::hasMember<Person>("age")) {
+    if (Meta::hasMember<Person>("age")) {
         std::cout << "Person has member named 'age'\n";
     }
 

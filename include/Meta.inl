@@ -24,7 +24,7 @@ inline bool Meta::hasMember(const std::string& name)
     bool found = false;
     for_tuple([&found, &name](const auto& member) {
         if (member.getName() == name) {
-            found = false;
+            found = true;
         }
     }, getMembers<T>());
     return found;
