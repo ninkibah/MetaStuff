@@ -39,7 +39,19 @@ void for_tuple(F&& f, TupleT&& tuple)
 }
 
 template <typename F>
-void for_tuple(F&& /* f */, std::tuple<>& /* tuple */)
+void for_tuple(F&& /* f */, const std::tuple<>& /* tuple */)
+{ /* do nothing */ }
+
+template <typename T, typename U,
+    typename F, typename... Args,
+    typename>
+void call_if_same_types(F&& f, Args&&... args)
 {
-    // do nothing
+    f(std::forward<Args>(args)...);
 }
+
+template <typename T, typename U,
+    typename F, typename... Args,
+    typename, typename>
+void call_if_same_types(F&& /* f */, Args&&... /* args */)
+{ /* do nothing */ }

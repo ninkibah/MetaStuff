@@ -31,7 +31,7 @@ struct Person {
 
 #include <Meta.h>
 template <>
-inline auto& Meta::getMembers<Person>()
+inline const auto& Meta::getMembers<Person>()
 {
     static auto members = std::make_tuple(
         member("age", &Person::getAge, &Person::setAge),

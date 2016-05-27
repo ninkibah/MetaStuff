@@ -35,18 +35,30 @@ inline auto& Meta::getMembers<SomeClass>()
 
 #pragma once
 
-#include <MemberPtr.h> 
-
 struct Meta {
+    // Returns const std::tuple<...>&, where ... is Member<T, Class>. Used for iteration over members 
     template <typename T>
-    inline static auto& getMembers();
+    inline static const auto& getMembers();
+
+    // Check if class has getMembers<T> specialization (has been registered)
+    template <typename T>
+    inline static bool isRegistered();
+
+    // Check if class T has member
+    template <typename T>
+    inline static bool hasMember(const std::string& name);
+
+    // Do F for member named 'name' with type T. It's important to pass correct type of the member
+    template <typename Class, typename T, typename F>
+    inline static void doForMember(const std::string& name, F&& f);
+
+    // Get value of the member named 'name'
+    template <typename T, typename Class>
+    inline static T getMemberValue(Class& obj, const std::string& name);
+
+    // Set value of the member named 'name'
+    template <typename T, typename Class>
+    inline static void setMemberValue(Class& obj, const std::string& name, const T& value);
 };
 
-// default for unregistered classes
-
-template <typename T>
-inline auto& Meta::getMembers()
-{
-    static std::tuple<> emptyTuple;
-    return emptyTuple;
-}
+#include "Meta.inl"

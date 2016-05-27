@@ -15,7 +15,7 @@ Dependencies
 -----
 - None! ([JsonCpp](https://github.com/open-source-parsers/jsoncpp) is used in example, but you can use any library you want, probably)
 
-How-to / example
+Example
 ----
 
 See example for complete example of JSON serialization.
@@ -51,7 +51,7 @@ No problem, just write these static functions,
 ```c++
 #include "Meta.h"
 template <>
-inline auto& Meta::getMembers<Person>()
+inline const auto& Meta::getMembers<Person>()
 {
     static auto memberPtrs = std::make_tuple(
         member("age", &Person::getAge, &Person::setAge),
@@ -61,7 +61,7 @@ inline auto& Meta::getMembers<Person>()
     return memberPtrs; 
 
 template <>
-inline auto& Meta::getMembers<MovieInfo>()
+inline const auto& Meta::getMembers<MovieInfo>()
 {
     static auto memberPtrs = std::make_tuple(
         member("name", &MovieInfo::name),
@@ -73,26 +73,29 @@ Note that you can either use pointers to members or pointers to getters/setters.
 
 and now you can call do this:
 ```c++
-forTuple(/* your lambda */, Meta::getMembers<Class>());
+for_tuple(/* your lambda */, Meta::getMembers<Class>());
 ```
 
-Your lambda should have one parameter which will be an instance of MemberPtr. Calling forTuple with T::getMembers() gives you ability to do something with each registered member of class T.
+Your lambda should have one parameter which will be an instance of Member. Calling forTuple with Meta::getMembers<T>() gives you ability to do something with each registered member of class T.
 (See example/JsonCast.inl for examples of such lambdas).
 
-MemberPtr has the following functions:
+Some docs (will be better in future!)
+---
 
-- std::string getName() - returns std::string of member name you've set during "registration"
-- const T& get(const Class& obj) - gets const reference to the member
-- void set(const Class& obj, const T& value) - sets value to member
+Member class has the following functions:
 
-If you provide MemberPtr with getters and setters it will use these functions for getting/setting members, otherwise the member will be accessed directly with pointer to member.
+* `const std::string& getName()` - returns `std::string` of member name you've set during "registration"
+* `const T& get(const Class& obj)` - gets const reference to the member
+* `void set(const Class& obj, const T& value)` - sets value to member
 
-In general Meta::getMembers<T>() template function specialization should have a following form and be put in header with you class (see comments in Meta.h for more info):
+If you provide Member with getters and setters it will use these functions for getting/setting members, otherwise the member will be accessed directly with pointer to member.
+
+In general `Meta::getMembers<T>()` template function specialization should have a following form and be put in header with you class (see comments in Meta.h for more info):
 
 ```c++
 #include <Meta.h>
 template <>
-inline auto& Meta::getMembers<SomeClass>()
+inline const auto& Meta::getMembers<SomeClass>()
 {
     static auto members = std::make_tuple(
         member("someMember", &SomeClass::someMember),

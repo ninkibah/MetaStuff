@@ -10,7 +10,7 @@ struct MovieInfo {
 #include <Meta.h>
 
 template <>
-inline auto& Meta::getMembers<MovieInfo>()
+inline const auto& Meta::getMembers<MovieInfo>()
 {
     static auto members = std::make_tuple(
         member("name", &MovieInfo::name),
