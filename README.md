@@ -1,11 +1,19 @@
 Meta stuff WIP
 =======
 
-This is the code I use in my game for all serialization/deserialization/introspection stuff. The code is not limited to any class, you can easily modify it to support your own formats.
-At the moment this code is not fully developed, so it's not recommended to use it for anything really serious as lots of stuff can change!
-I put this code mostly for other people to learn from and maybe help me expand this to a pretty good lib. Still, use it as you like, it's MIT licensed after all.
+This is the code I use in my game for all serialization/deserialization/introspection stuff.
 
-This library is still in development and all suggestions are welcome!
+Features
+----
+
+- **Strongly typed and doestn't use RTTI in any way**. You can iterate over class members and you still know member's type, there's no type erasure.
+- **No dependencies**. You have to use modern C++ compiler which supports C++14, though. (VS 2015, GCC 5+, Clang 3.8)
+- **Serialization is not limited to any format**. There's no standard way of doing serialization. You can implement it yourself for your own format. (See JSON example to see how it can be done)
+
+The lib is still in development, so it's not recommended to use it for anything really serious as lots of stuff can change!
+Still, use it as you like, it's MIT licensed after all.
+
+All suggestions about improving the lib are welcome. I know it isn't perfect, so let's make it better together. :)
 
 Requirements
 ----
