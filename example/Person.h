@@ -12,8 +12,9 @@ struct Person {
     // add this if you want to register private members:
     // friend struct Meta;
 
-    void setAge(const int& a)
+    void setAge(int a)
     {
+        std::cout << "Age is set by calling setter!\n";
         if (a >= 0 && a < 128) { // sorry, if you're older than 128
             age = a;
         } else {
@@ -21,7 +22,7 @@ struct Person {
         }
     }
 
-    const int& getAge() const { return age; }
+    int getAge() const { return age; }
 
     int age;
     float salary;
@@ -34,7 +35,8 @@ template <>
 inline const auto& Meta::getMembers<Person>()
 {
     static auto members = std::make_tuple(
-        member("age", &Person::getAge, &Person::setAge),
+        member("age", &Person::age)
+            .addGetterSetter(&Person::getAge, &Person::setAge),
         member("salary", &Person::salary),
         member("name", &Person::name),
         member("favouriteMovies", &Person::favouriteMovies));
