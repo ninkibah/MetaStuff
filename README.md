@@ -13,7 +13,7 @@ Requirements
 
 Dependencies
 -----
-- None! ([JsonCpp](https://github.com/open-source-parsers/jsoncpp) is used in example, but you can use any library you want, probably)
+- None! ([JsonCpp](https://github.com/open-source-parsers/jsoncpp) is used in example, but you can use any library you want for serialization)
 
 Example
 ----
@@ -23,7 +23,7 @@ See example for complete example of JSON serialization.
 Suppose you have classes like this:
 ```c++
 struct Person {
-    void setAge(const int& a)
+    void setAge(int a)
     {
         if (a >= 0 && a < 128) { // sorry, if you're older than 128
             age = a;
@@ -32,7 +32,7 @@ struct Person {
         }
     }
 
-    const int& getAge() const { return age; }
+    int getAge() const { return age; }
 
     int age;
     float salary;
@@ -54,7 +54,8 @@ template <>
 inline const auto& Meta::getMembers<Person>()
 {
     static auto members = std::make_tuple(
-        member("age", &Person::getAge, &Person::setAge),
+        member("age")
+            .addGetterSetter(&Person::getAge, &Person::setAge),
         member("salary", &Person::salary),
         member("name", &Person::name),
         member("favouriteMovies", &Person::favouriteMovies));
@@ -76,8 +77,8 @@ and now you can call do this:
 for_tuple(/* your lambda */, Meta::getMembers<Class>());
 ```
 
-Your lambda should have one parameter which will be an instance of Member. Calling forTuple with Meta::getMembers<T>() gives you ability to do something with each registered member of class T.
-(See example/JsonCast.inl for examples of such lambdas).
+Your lambda should have one parameter which will be an instance of Member. Calling ```forTuple``` with ````Meta::getMembers<T>()``` gives you ability to do something with each registered member of class T.
+(See **example/JsonCast.inl** for examples of such lambdas).
 
 Some docs (will be better in future!)
 ---
@@ -91,8 +92,9 @@ Member class has the following functions:
 
 If you provide Member with getters and setters it will use these functions for getting/setting members, otherwise the member will be accessed directly with pointer to member.
 
-In general `Meta::getMembers<T>()` template function specialization should have a following form and should be put in header with you class (see comments in Meta.h for more info):
-*It's important for members tuple to be ```static```, otherwise it'll be recreated over and over*
+In general `Meta::getMembers<T>()` template function specialization should have a following form and should be put in header with you class (see comments in Meta.h for more info)
+
+**It's important for members tuple to be ```static```, otherwise it'll be recreated over and over**
 
 ```c++
 #include <Meta.h>
@@ -115,7 +117,6 @@ member("someMember", &SomeClass::someMember)
 ```
 
 Getters and setters can be by-value:
-
 ```c++
 // T is member type
 T SomeClass::getSomeMember() const { return someMember; }
@@ -123,7 +124,6 @@ void SomeClass::getSomeMember(T value) { someMember = value; }
 ```
 
 ... or by reference
-
 ```c++
 // T is member type
 const T& SomeClass::getSomeMember() const { return someMember; }
@@ -136,7 +136,7 @@ Non-const getter has the following form:
 T& SomeClass::getSomeMember() { return someMember; }
 ```
 
-Getters and setters are always called (if they're present) in Member::get/Member::set functions, otherwise the pointer to member is used. The same applies to non-const getter in Member::getRef
+Getters and setters are always called (if they're present) in Member::get/Member::set functions, otherwise the pointer to member is used. The same applies to non-const getter in Member::getRef.
 
 You can make Meta class a friend to your registered class to be able to add private members to getMembers function specialization.
 
