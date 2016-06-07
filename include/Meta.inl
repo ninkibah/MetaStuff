@@ -13,7 +13,7 @@ inline const auto& Meta::getMembers()
 }
 
 template <typename T>
-inline bool Meta::isRegistered()
+inline constexpr bool Meta::isRegistered()
 {
     return !std::is_same<const std::tuple<>&, decltype(getMembers<T>())>::value;
 }

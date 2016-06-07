@@ -42,7 +42,7 @@ struct Meta {
 
     // Check if class has getMembers<T> specialization (has been registered)
     template <typename T>
-    inline static bool isRegistered();
+    inline constexpr static bool isRegistered();
 
     // Check if class T has member
     template <typename T>
