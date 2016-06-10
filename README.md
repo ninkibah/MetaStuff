@@ -6,7 +6,7 @@ This is the code I use in my game for all serialization/deserialization/introspe
 Features
 ----
 
-- **Strongly typed and doestn't use RTTI in any way**. You can iterate over class members and you still know member's type, there's no type erasure.
+- **Strongly typed and doesn't use RTTI or virtual functions in any way**. You can iterate over class members and you still know member's type, there's no type erasure and it's all very fast
 - **No dependencies**. You have to use modern C++ compiler which supports C++14, though. (VS 2015, GCC 5+, Clang 3.8)
 - **Serialization is not limited to any format**. There's no standard way of doing serialization. You can implement it yourself for your own format. (See JSON example to see how it can be done)
 
@@ -89,10 +89,10 @@ Note that you can either use pointers to members or pointers to getters/setters.
 
 and now you can call do this:
 ```c++
-doForAllMembers<SomeClass>(/* your lambda which takes const auto& as a param (this will be Member<SomeClass, T> */);
+meta::doForAllMembers<SomeClass>(/* your lambda */);
 ```
 
-Your lambda should have one parameter which will be an instance of Member. Calling ```doForAllMembers<SomeClass>``` gives you ability to do something with each registered member of class T.
+Your lambda should have one parameter which will be an instance of Member. Calling ```meta::doForAllMembers<T>``` gives you ability to do something with each registered member of class T.
 (See **example/JsonCast.inl** for examples of such lambdas).
 
 Some docs (will be better in future!)
