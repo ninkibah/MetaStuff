@@ -5,27 +5,44 @@
 #include <Meta.h>
 
 
-
-template <typename Class>
+template <typename Class, typename>
 void serialize(const Class& obj, Json::Value& root)
 {
-    for_tuple([&obj, &root](const auto& member)
-    {
-        Json::cast(member.get(obj), root[member.getName()]);
-    }, Meta::getMembers<Class>());
+    meta::doForAllMembers<Class>(
+        [&obj, &root](const auto& member)
+        {
+            auto& objName = root[member.getName()];
+            Json::cast(member.get(obj), objName);
+        }
+    );
 }
 
+template <typename Class, typename, typename>
+void serialize(const Class& /* obj */, Json::Value& /* root */)
+{
 
-template <typename Class>
+}
+
+template <typename Class, typename>
 void deserialize(Class& obj, const Json::Value& root)
 {
-    for_tuple([&obj, &root](const auto& member) {
-        using MemberT = typename std::decay<decltype(member)>::type::member_type; // get type of member
+    meta::doForAllMembers<Class>(
+        [&obj, &root](const auto& member)
+        {
+            using MemberT =
+                typename std::decay_t<decltype(member)>::member_type; // get type of member
 
-        MemberT value;
-        Json::fromValue(value, root[member.getName()]);
-        member.set(obj, value);
-    }, Meta::getMembers<Class>());
+            MemberT value;
+            Json::fromValue(value, root[member.getName()]);
+            member.set(obj, value);
+        }
+    );
+}
+
+template <typename Class, typename, typename>
+void deserialize(Class& /* obj */, const Json::Value& /* root */)
+{
+
 }
 
 namespace Json
@@ -88,10 +105,10 @@ template <typename T>
 void fromValue_map(T& value, const Value& root)
 {
     for (auto& key : root.getMemberNames()) {
-        // cast from std::string to map's key type:
+        // cast from std::string to map's key type (JSON keys are always strings)
         typename T::key_type mapKey;
         fromString(mapKey, key);
-        fromValue(value[mapKey], root[key]); // TODO: fromString(key) to support different types of keys
+        fromValue(value[mapKey], root[key]);
     }
 }
 

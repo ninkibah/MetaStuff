@@ -10,10 +10,13 @@ class Unregistered
 
 #include <Meta.h>
 
+
+
 void printSeparator()
 {
     std::cout << "========================\n";
 }
+
 
 int main()
 {
@@ -21,45 +24,53 @@ int main()
     person.age = 25;
     person.salary = 3.50f;
     person.name = "Ron Burgandy"; // I'm a person!
+    
     person.favouriteMovies["Nostalgia Critic"] = { MovieInfo{ "The Room", 8.5f } };
-    person.favouriteMovies["John Tron"] = { MovieInfo{"Goosebumps", 10.0f },
+    person.favouriteMovies["John Tron"] = { MovieInfo{ "Goosebumps", 10.0f },
                                             MovieInfo{ "Talking Cat", 9.0f } };
 
     // printing members of different classes
     std::cout << "Members of class Person:\n";
-    for_tuple([](const auto& member)
-    {
-        std::cout << "* " << member.getName() << '\n';
-    }, Meta::getMembers<Person>());
+    meta::doForAllMembers<Person>(
+        [](const auto& member)
+        {
+            std::cout << "* " << member.getName() << '\n';
+        }
+    );
 
     std::cout << "Members of class MovieInfo:\n";
-    for_tuple([](const auto& member)
-    {
-        std::cout << "* " << member.getName() << '\n';
-    }, Meta::getMembers<MovieInfo>());
+    meta::doForAllMembers<MovieInfo>(
+        [](const auto& member)
+        {
+            std::cout << "* " << member.getName() << '\n';
+        }
+    );
 
     printSeparator();
 
     // checking if classes are registered
-    if (Meta::isRegistered<Person>()) {
+    if (meta::isRegistered<Person>()) {
         std::cout << "Person class is registered\n";
     }
 
-    if (!Meta::isRegistered<Unregistered>()) {
+    // meta::isRegistered is constexpr, so can be used in enable_if and static_assert!
+    static_assert(meta::isRegistered<Person>(), "Person class is not registered!");
+
+    if (!meta::isRegistered<Unregistered>()) {
         std::cout << "Unregistered class is unregistered\n";
     }
 
     // checking if class has a member
-    if (Meta::hasMember<Person>("age")) {
+    if (meta::hasMember<Person>("age")) {
         std::cout << "Person has member named 'age'\n";
     }
 
     // getting setting member values
-    int age = Meta::getMemberValue<int>(person, "age");
+    int age = meta::getMemberValue<int>(person, "age");
     std::cout << "Got person's age: " << age << '\n';
 
-    Meta::setMemberValue<int>(person, "age", 30);
-    age = Meta::getMemberValue<int>(person, "age");
+    meta::setMemberValue<int>(person, "age", 30);
+    age = meta::getMemberValue<int>(person, "age");
     std::cout << "Changed person's age to " << age << '\n';
 
     printSeparator();

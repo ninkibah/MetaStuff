@@ -1,32 +1,24 @@
 /* -----------------------------------------------------------------------------------------------
-Meta struct which getMembers() function which can be specialized for specific classes.
-This is how class registration works.
 
-Here's an example:
+meta::registerMembers<T> is used for class registration and it has the following form when specialized:
+
 template <>
-inline auto& Meta::getMembers<SomeClass>()
+auto meta::registerMembers<YourClass>()
 {
-    static auto members = std::make_tuple(
-        member("someMember", &SomeClass::someMember),
+    return std::make_tuple(
+        member(...),
         ...
     );
-    return members;
 }
 
 ! Some important details:
 1) This specialization should be defined in header, because compiler needs to deduce the return type.
-2) It's guaranteed that members for each class will be created ONCE and there won't be any copies
-(TODO: find this in C++11 standard)
-
-    "[..] An inline function with external linkage shall have the same address in all translation units.
-    A static local variable in an extern inline function always refers to the same object.
-    A string literal in an extern inline function is the same object in different translation units."
-                                                                                - [dcl.fct.spec]/4
-    
-3) getMembers could easily be a free function, but befriending such function is hard if you want to
+2) This function is called by MetaHolder during registerMembers initialization, so the tuple is created
+   only once.
+3) registerMembers could easily be a free function, but befriending such function is hard if you want to
    be able to get pointers to private members... Writing "friend class Meta" in your preferred class
    is just much easier. Though this might be somehow fixed in the future.
-4) If the class is not registered then forTuple(<your function>, Meta::getMembers<T>()) would do nothing,
+4) If the class is not registered then doForAllMembers(<your function>) will do nothing,
    because the function will return empty tuple.
 5) MemberPtr.h is included in this file just so that user can #include "Meta.h" and get MemberPtr.h
    included too, which is always needed for registration.
@@ -35,30 +27,76 @@ inline auto& Meta::getMembers<SomeClass>()
 
 #pragma once
 
-struct Meta {
-    // Returns const std::tuple<...>&, where ... is Member<T, Class>. Used for iteration over members 
-    template <typename T>
-    inline static const auto& getMembers();
+#ifdef _MSC_VER
+#pragma warning (disable : 4396) // silly VS warning about inline friend stuff...
+#endif
 
-    // Check if class has getMembers<T> specialization (has been registered)
-    template <typename T>
-    inline constexpr static bool isRegistered();
+#include <type_traits>
 
-    // Check if class T has member
-    template <typename T>
-    inline static bool hasMember(const std::string& name);
-
-    // Do F for member named 'name' with type T. It's important to pass correct type of the member
-    template <typename Class, typename T, typename F>
-    inline static void doForMember(const std::string& name, F&& f);
-
-    // Get value of the member named 'name'
-    template <typename T, typename Class>
-    inline static T getMemberValue(Class& obj, const std::string& name);
-
-    // Set value of the member named 'name'
-    template <typename T, typename Class>
-    inline static void setMemberValue(Class& obj, const std::string& name, const T& value);
+// type_list is array of types
+template <typename... Args>
+struct type_list
+{
+    template <std::size_t N>
+    using type = std::tuple_element_t<N, std::tuple<Args...>>;
+    using indices = std::index_sequence_for<Args...>;
+    static const size_t size = sizeof...(Args);
 };
+
+namespace meta
+{
+
+template <typename... Args>
+auto members(Args&&... args);
+
+// function used for registration of classes by user
+template <typename Class>
+inline auto registerMembers();
+
+// returns std::tuple of Members
+template <typename Class>
+const auto& getMembers();
+
+// Check if class has registerMembers<T> specialization (has been registered)
+template <typename Class>
+constexpr bool isRegistered();
+
+// Check if Class has non-default ctor registered
+template <typename Class>
+constexpr bool ctorRegistered();
+
+template <typename T>
+struct constructor_args {
+    using types = type_list<>;
+};
+
+template <typename T>
+using constructor_arguments = typename constructor_args<T>::types;
+
+// Check if user registered non default constructor
+template <typename Class>
+constexpr bool ctorRegistered();
+
+// Check if class T has member
+template <typename Class>
+bool hasMember(const std::string& name);
+
+template <typename Class, typename F>
+void doForAllMembers(F&& f);
+
+// Do F for member named 'name' with type T. It's important to pass correct type of the member
+template <typename Class, typename T, typename F>
+void doForMember(const std::string& name, F&& f);
+
+// Get value of the member named 'name'
+template <typename T, typename Class>
+T getMemberValue(Class& obj, const std::string& name);
+
+// Set value of the member named 'name'
+template <typename T, typename Class, typename V,
+    typename = std::enable_if_t<std::is_constructible<T, V>::value>>
+void setMemberValue(Class& obj, const std::string& name, V&& value);
+
+}
 
 #include "Meta.inl"

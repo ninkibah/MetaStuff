@@ -42,16 +42,16 @@ template <typename F>
 void for_tuple(F&& /* f */, const std::tuple<>& /* tuple */)
 { /* do nothing */ }
 
-template <typename T, typename U,
+template <bool Test,
     typename F, typename... Args,
     typename>
-void call_if_same_types(F&& f, Args&&... args)
+void call_if(F&& f, Args&&... args)
 {
     f(std::forward<Args>(args)...);
 }
 
-template <typename T, typename U,
+template <bool Test,
     typename F, typename... Args,
     typename, typename>
-void call_if_same_types(F&& /* f */, Args&&... /* args */)
+void call_if(F&& /* f */, Args&&... /* args */)
 { /* do nothing */ }

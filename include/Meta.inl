@@ -1,64 +1,107 @@
 #include <cassert>
 #include <tuple>
 
-#include <Member.h> 
-#include <template_helpers.h>
+#include "Member.h" 
+#include "template_helpers.h"
+#include "detail/MetaGetter.h"
 
-// default for unregistered classes
-template <typename T>
-inline const auto& Meta::getMembers()
+namespace meta
 {
-    static std::tuple<> emptyTuple;
-    return emptyTuple;
+
+template <typename... Args>
+auto members(Args&&... args)
+{
+    // just this... but may become more complex later, who knows!
+    //  Still, better no to expose too much to end-user.
+    return std::make_tuple(std::forward<Args>(args)...);
 }
 
-template <typename T>
-inline constexpr bool Meta::isRegistered()
+template <typename Class>
+inline auto registerMembers()
 {
-    return !std::is_same<const std::tuple<>&, decltype(getMembers<T>())>::value;
+    return std::make_tuple();
 }
 
-template <typename T>
-inline bool Meta::hasMember(const std::string& name)
+template <typename Class>
+const auto& getMembers()
+{
+    return detail::MetaGetter<Class, decltype(registerMembers<Class>())>::getMembers();
+}
+
+template <typename Class>
+constexpr bool isRegistered()
+{
+    return !std::is_same<const std::tuple<>&, decltype(getMembers<Class>())>::value;
+}
+
+// Check if Class has non-default ctor registered
+template <typename Class>
+constexpr static bool ctorRegistered()
+{
+    return !std::is_same<type_list<>, constructor_arguments<Class>>::value;
+}
+
+template <typename Class>
+bool hasMember(const std::string& name)
 {
     bool found = false;
-    for_tuple([&found, &name](const auto& member) {
-        if (member.getName() == name) {
-            found = true;
+    doForAllMembers<Class>(
+        [&found, &name](const auto& member)
+        {
+            if (member.getName() == name) {
+                found = true;
+            }
         }
-    }, getMembers<T>());
+    );
     return found;
 }
 
-template <typename Class, typename T, typename F>
-inline void Meta::doForMember(const std::string& name, F&& f)
+template <typename Class, typename F>
+void doForAllMembers(F&& f)
 {
-    for_tuple([&](const auto& member) {
-        if (member.getName() == name) {
-            using MemberT =
-                typename std::decay<decltype(member)>::type::member_type; // get type of member
-            assert((std::is_same<MemberT, T>::value) && "Member doesn't have type T");
-            call_if_same_types<MemberT, T>(f, member); // because lambda probably contains code which will compile only with Member<T, Class> so we'll only call it then!
+    static_assert(isRegistered<Class>(), "Class is not registered");
+    for_tuple(std::forward<F>(f), getMembers<Class>());
+}
+
+template <typename Class, typename T, typename F>
+void doForMember(const std::string& name, F&& f)
+{
+    doForAllMembers<Class>(
+        [&](const auto& member)
+        {
+            if (member.getName() == name) {
+                using MemberT =
+                    typename std::decay_t<decltype(member)>::member_type; // get type of member
+                assert((std::is_same<MemberT, T>::value) && "Member doesn't have type T");
+                call_if<std::is_same<MemberT, T>::value>(std::forward<F>(f), member);
+            }
         }
-    }, getMembers<Class>());
+    );
 }
 
 template <typename T, typename Class>
-inline T Meta::getMemberValue(Class& obj, const std::string& name)
+T getMemberValue(Class& obj, const std::string& name)
 {
     T value;
-    doForMember<Class, T>(name, [&value, &obj](const auto& member)
-    {
-        value = member.get(obj);
-    });
+    doForMember<Class, T>(name,
+        [&value, &obj](const auto& member)
+        {
+            value = member.get(obj);
+        }
+    );
     return value;
 }
 
-template <typename T, typename Class>
-inline void Meta::setMemberValue(Class& obj, const std::string& name, const T& value)
+template <typename T, typename Class, typename V,
+    typename>
+void setMemberValue(Class& obj, const std::string& name, V&& value)
 {
-    doForMember<Class, T>(name, [&value, &obj](const auto& member)
-    {
-        member.set(obj, value);
-    });
+    doForMember<Class, T>(name,
+        [&obj, value = std::forward<V>(value)](const auto& member)
+        {
+            member.set(obj, value);
+        }
+    );
 }
+
+} // end of namespace meta

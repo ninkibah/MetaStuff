@@ -10,7 +10,8 @@
 
 struct Person {
     // add this if you want to register private members:
-    // friend struct Meta;
+    // template <>
+    // auto meta::registerMembers<Person>();
 
     void setAge(int a)
     {
@@ -31,14 +32,20 @@ struct Person {
 };
 
 #include <Meta.h>
-template <>
-inline const auto& Meta::getMembers<Person>()
+
+namespace meta
 {
-    static auto members = std::make_tuple(
+
+template <>
+inline auto registerMembers<Person>()
+{
+    return members(
         member("age", &Person::age)
             .addGetterSetter(&Person::getAge, &Person::setAge),
         member("salary", &Person::salary),
         member("name", &Person::name),
-        member("favouriteMovies", &Person::favouriteMovies));
-    return members;
+        member("favouriteMovies", &Person::favouriteMovies)
+    );
+}
+
 }

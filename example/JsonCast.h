@@ -7,10 +7,24 @@
 
 #include <json/json-forwards.h>
 
-template <typename Class>
+#include <Meta.h>
+
+template <typename Class,
+    typename = std::enable_if_t<meta::isRegistered<Class>()>>
 void serialize(const Class& obj, Json::Value& root);
 
-template <typename Class>
+template <typename Class,
+    typename = std::enable_if_t<!meta::isRegistered<Class>()>,
+    typename = void>
+void serialize(const Class& obj, Json::Value& root);
+
+template <typename Class,
+    typename = std::enable_if_t<meta::isRegistered<Class>()>>
+void deserialize(Class& obj, const Json::Value& root);
+
+template <typename Class,
+    typename = std::enable_if_t<!meta::isRegistered<Class>()>,
+    typename = void>
 void deserialize(Class& obj, const Json::Value& root);
 
 namespace Json

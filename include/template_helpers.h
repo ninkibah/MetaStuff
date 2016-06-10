@@ -3,6 +3,8 @@
 
 #pragma once
 
+
+
 // for_each_arg - call f for each argument from pack
 template <typename F, typename... Args>
 void for_each_arg(F&& f, Args&&... args);
@@ -15,19 +17,19 @@ void for_tuple(F&& f, TupleT&& tuple);
 template <typename F>
 void for_tuple(F&& f, const std::tuple<>& tuple);
 
-// calls F if types T and U are the same
+// calls F if condition is true
 // this is useful for templated lambdas, because they won't be
 // instantiated with unneeded types
-template <typename T, typename U,
+template <bool Test,
     typename F, typename... Args,
-    typename = std::enable_if_t<std::is_same<T, U>::value>>
-void call_if_same_types(F&& f, Args&&... args);
+    typename = std::enable_if_t<Test>>
+void call_if(F&& f, Args&&... args);
 
-// types differ, do nothing
-template <typename T, typename U,
+// calls F if condition is false
+template <bool Test,
     typename F, typename... Args,
-    typename = std::enable_if_t<!std::is_same<T, U>::value>,
+    typename = std::enable_if_t<!Test>,
     typename = void> // dummy type for difference between two functions
-void call_if_same_types(F&& f, Args&&... args);
+void call_if(F&& f, Args&&... args);
 
 #include "template_helpers.inl"

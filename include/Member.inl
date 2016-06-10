@@ -1,77 +1,77 @@
 #include <cassert>
 
+namespace meta
+{
+
 template <typename Class, typename T>
-Member<Class, T>::Member(std::string&& name, 
-    typename Member<Class, T>::member_ptr_t ptr) :
-    name(std::move(name)),
+Member<Class, T>::Member(const char* name, member_ptr_t<Class, T> ptr) :
+    name(name),
     ptr(ptr),
-    getterPtr(nullptr),
-    setterPtr(nullptr),
-    getterVPtr(nullptr),
-    setterVPtr(nullptr),
-    nonConstGetterPtr(nullptr)
+    refGetterPtr(nullptr),
+    refSetterPtr(nullptr),
+    valGetterPtr(nullptr),
+    valSetterPtr(nullptr),
+    nonConstRefGetterPtr(nullptr)
 { }
 
 template <typename Class, typename T>
-Member<Class, T>& Member<Class, T>::addGetterSetter(
-    typename Member<Class, T>::getter_func_ptr_t getterPtr,
-    typename Member<Class, T>::setter_func_ptr_t setterPtr)
+Member<Class, T>& Member<Class, T>::addNonConstGetter(nonconst_ref_getter_func_ptr_t<Class, T> nonConstRefGetterPtr)
 {
-    this->getterPtr = getterPtr;
-    this->setterPtr = setterPtr;
+    this->nonConstRefGetterPtr = nonConstRefGetterPtr;
     return *this;
 }
 
 template <typename Class, typename T>
-Member<Class, T>& Member<Class, T>::addNonConstGetter(typename Member<Class, T>::nonconst_getter_func_ptr_t nonConstGetterPtr)
+Member<Class, T>& Member<Class, T>::addGetterSetter(ref_getter_func_ptr_t<Class, T> getterPtr,
+    ref_setter_func_ptr_t<Class, T> setterPtr)
 {
-    this->nonConstGetterPtr = nonConstGetterPtr;
+    this->refGetterPtr = getterPtr;
+    this->refSetterPtr = setterPtr;
     return *this;
 }
 
 template <typename Class, typename T>
-Member<Class, T>& Member<Class, T>::addConstGetter(typename Member<Class, T>::getter_func_ptr_t getterPtr)
+Member<Class, T>& Member<Class, T>::addConstGetter(ref_getter_func_ptr_t<Class, T> getterPtr)
 {
-    this->getterPtr = getterPtr;
+    this->refGetterPtr = getterPtr;
     return *this;
 }
 
 template <typename Class, typename T>
-Member<Class, T>& Member<Class, T>::addSetter(typename Member<Class, T>::setter_func_ptr_t setterPtr)
+Member<Class, T>& Member<Class, T>::addSetter(ref_setter_func_ptr_t<Class, T> setterPtr)
 {
-    this->setterPtr = setterPtr;
+    this->refSetterPtr = setterPtr;
     return *this;
 }
 
 template <typename Class, typename T>
-Member<Class, T>& Member<Class, T>::addGetterSetter(
-    typename Member<Class, T>::getter_func_ptr_tv getterPtr,
-    typename Member<Class, T>::setter_func_ptr_tv setterPtr)
+Member<Class, T>& Member<Class, T>::addGetterSetter(val_getter_func_ptr_t<Class, T> getterPtr,
+    val_setter_func_ptr_t<Class, T> setterPtr)
 {
-    this->getterVPtr = getterPtr;
-    this->setterVPtr = setterPtr;
+    this->valGetterPtr = getterPtr;
+    this->valSetterPtr = setterPtr;
     return *this;
 }
 
 template <typename Class, typename T>
-Member<Class, T>& Member<Class, T>::addConstGetter(typename Member<Class, T>::getter_func_ptr_tv getterPtr)
+Member<Class, T>& Member<Class, T>::addConstGetter(val_getter_func_ptr_t<Class, T> getterPtr)
 {
-    this->getterVPtr = getterPtr;
+    this->valGetterPtr = getterPtr;
     return *this;
 }
 
 template <typename Class, typename T>
-Member<Class, T>& Member<Class, T>::addSetter(typename Member<Class, T>::setter_func_ptr_tv setterPtr)
+Member<Class, T>& Member<Class, T>::addSetter(val_setter_func_ptr_t<Class, T> setterPtr)
 {
-    this->setterVPtr = setterPtr;
+    this->valSetterPtr = setterPtr;
     return *this;
 }
 
 template <typename Class, typename T>
 const T& Member<Class, T>::get(const Class& obj) const
 {
-    if (getterPtr) {
-        return (obj.*getterPtr)();
+    if (refGetterPtr) {
+        return (obj.*refGetterPtr)();
     } else {
         return obj.*ptr;
     }
@@ -82,8 +82,8 @@ const T& Member<Class, T>::get(const Class& obj) const
 template <typename Class, typename T>
 T& Member<Class, T>::getRef(Class& obj) const
 {
-    if (nonConstGetterPtr) {
-        (obj.*nonConstGetterPtr)();
+    if (nonConstRefGetterPtr) {
+        (obj.*nonConstRefGetterPtr)();
     } else {
         return obj.*ptr;
     }
@@ -92,19 +92,23 @@ T& Member<Class, T>::getRef(Class& obj) const
 }
 
 template<typename Class, typename T>
-void Member<Class, T>::set(Class& obj, const T& value) const
+template <typename V, typename>
+void Member<Class, T>::set(Class& obj, V&& value) const
 {
-    if (setterPtr) {
-        (obj.*setterPtr)(value);
-    } else if (setterVPtr) {
-        (obj.*setterVPtr)(value); // will copy value
+    // TODO: add rvalueSetter?
+    if (refSetterPtr) {
+        (obj.*refSetterPtr)(value);
+    } else if (valSetterPtr) {
+        (obj.*valSetterPtr)(value); // will copy value
     } else {
         obj.*ptr = value;
     }
 }
 
 template <typename Class, typename T>
-Member<Class, T> member(std::string&& name, T Class::* ptr)
+Member<Class, T> member(const char* name, T Class::* ptr)
 {
-    return Member<Class, T>(std::move(name), ptr);
+    return Member<Class, T>(name, ptr);
 }
+
+} // end of namespace meta

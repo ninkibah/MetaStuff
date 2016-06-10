@@ -9,11 +9,16 @@ struct MovieInfo {
 
 #include <Meta.h>
 
-template <>
-inline const auto& Meta::getMembers<MovieInfo>()
+namespace meta
 {
-    static auto members = std::make_tuple(
+
+template <>
+inline auto registerMembers<MovieInfo>()
+{
+    return members(
         member("name", &MovieInfo::name),
-        member("rating", &MovieInfo::rating));
-    return members;
+        member("rating", &MovieInfo::rating)
+    );
+}
+
 }
