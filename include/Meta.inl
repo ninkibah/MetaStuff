@@ -31,7 +31,7 @@ const auto& getMembers()
 template <typename Class>
 constexpr bool isRegistered()
 {
-    return !std::is_same<const std::tuple<>&, decltype(getMembers<Class>())>::value;
+    return !std::is_same<std::tuple<>, decltype(registerMembers<Class>())>::value;
 }
 
 // Check if Class has non-default ctor registered

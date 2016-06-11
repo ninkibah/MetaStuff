@@ -131,7 +131,7 @@ T deserialize_basic(const Value& obj)
 template <typename T>
 void deserialize(std::vector<T>& obj, const Value& object)
 {
-    // vector.resize() cannot be done here, because it'll call T()
+    obj.reserve(object.size()); // vector.resize() works only for default constructible types
     for (auto& elem : object) {
         obj.push_back(deserialize<T>(elem)); // push rvalue
     }
