@@ -177,7 +177,7 @@ You can make the template specialization of `registerMembers` a friend to your r
 class SomeClass {
     template <>
     friend auto registerMembers<SomeClass>(); // Visual Studio may produce warning here
-            // Just ignore it, it's a bug (`#pragma warning (disable : 4396)` is added in Meta.h but can be disabled by other code)
+        // Just ignore it, it's a bug (`#pragma warning (disable : 4396)` is added in Meta.h
 };
 ```
 
