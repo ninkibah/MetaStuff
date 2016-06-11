@@ -1,127 +1,150 @@
 #include <json/json.h>
-#include "StringCast.h"
-#include "template_helpers.h"
-
-#include <Meta.h>
-
-
-template <typename Class, typename>
-void serialize(const Class& obj, Json::Value& root)
-{
-    meta::doForAllMembers<Class>(
-        [&obj, &root](const auto& member)
-        {
-            auto& objName = root[member.getName()];
-            Json::cast(member.get(obj), objName);
-        }
-    );
-}
-
-template <typename Class, typename, typename>
-void serialize(const Class& /* obj */, Json::Value& /* root */)
-{
-
-}
-
-template <typename Class, typename>
-void deserialize(Class& obj, const Json::Value& root)
-{
-    meta::doForAllMembers<Class>(
-        [&obj, &root](const auto& member)
-        {
-            using MemberT =
-                typename std::decay_t<decltype(member)>::member_type; // get type of member
-
-            MemberT value;
-            Json::fromValue(value, root[member.getName()]);
-            member.set(obj, value);
-        }
-    );
-}
-
-template <typename Class, typename, typename>
-void deserialize(Class& /* obj */, const Json::Value& /* root */)
-{
-
-}
 
 namespace Json
 {
 
-template <typename T>
-void cast(const T& value, Json::Value& root)
+/////////////////// DESERIALIZATION
+
+template <typename Class,
+    typename>
+Value serialize(const Class& obj)
 {
-    serialize(value, root);
+    return Value(obj);
 }
 
-template <typename T>
-void cast(const std::vector<T>& value, Json::Value& root)
+template <typename Class,
+    typename, typename>
+    Value serialize(const Class& obj)
 {
-    auto vectorSize = static_cast<Json::ArrayIndex>(value.size());
-    root.resize(vectorSize); // will become Json::arrayValue
-    for (Json::ArrayIndex i = 0; i < vectorSize; ++i) {
-        cast(value[i], root[i]);
+    return serialize_impl(obj);
+}
+
+template <typename Class,
+    typename>
+Value serialize_impl(const Class& obj)
+{
+    Value value(objectValue);
+    meta::doForAllMembers<Class>(
+        [&obj, &value](auto& member)
+    {
+        auto& valueName = value[member.getName()];
+        if (member.canGetConstRef()) {
+            valueName = serialize(member.get(obj));
+        } else if (member.hasGetter()) {
+            valueName = serialize(member.getCopy(obj)); // passing copy as const ref, it's okay
+        } else {
+            throw std::runtime_error("Error: can't deserialize member because it's write only");
+        }
+    }
+    );
+    return value;
+}
+
+template <typename Class,
+    typename, typename>
+Value serialize_impl(const Class& obj)
+{
+    return serialize_basic(obj);
+}
+
+template <typename Class>
+Value serialize_basic(const Class& obj)
+{
+    return Value(nullValue);
+}
+
+// specialization for std::vector
+template <typename T>
+Value serialize_basic(const std::vector<T>& obj)
+{
+    Value value(arrayValue);
+    value.resize(obj.size());
+    int i = 0;
+    for (auto& elem : obj) {
+        value[i] = serialize(elem);
+        ++i;
+    }
+    return value;
+}
+
+// specialization for std::unodered_map
+template <typename K, typename V>
+Value serialize_basic(const std::unordered_map<K, V>& obj)
+{
+    Value value(objectValue);
+    for (auto& pair : obj) {
+        value[castToString(pair.first)] = serialize(pair.second);
+    }
+    return value;
+}
+
+/////////////////// DESERIALIZATION
+
+template <typename Class>
+Class deserialize(const Value& obj)
+{
+    Class c;
+    deserialize(c, obj);
+    return c;
+}
+
+template <typename Class,
+    typename>
+void deserialize(Class& obj, const Value& object)
+{
+    if (object.isObject()) {
+        meta::doForAllMembers<Class>(
+            [&obj, &object](auto& member)
+            {
+                auto& objName = object[member.getName()];
+                if (!objName.isNull()) {
+                    using MemberT = typename std::decay<decltype(member)>::type::member_type;
+                    if (member.hasSetter()) {
+                        member.set(obj, deserialize<MemberT>(objName));
+                    } else if (member.canGetRef()) {
+                        deserialize(member.getRef(obj), objName);
+                    } else {
+                        throw std::runtime_error("Error: can't deserialize member because it's read only");
+                    }
+                }
+            }
+        );
+    } else {
+        throw std::runtime_error("Error: can't deserialize from Json::Value to Class.");
     }
 }
 
-template <typename T>
-void cast_map(const T& value, Json::Value& root)
+template <typename Class,
+    typename, typename>
+void deserialize(Class& obj, const Value& object)
 {
-    root = Value(Json::objectValue);
-    for (auto& pair : value) {
-        auto key = castToString(pair.first);
-        cast(pair.second, root[key]); 
+    obj = deserialize_basic<Class>(object);
+}
+
+template <typename T>
+T deserialize_basic(const Value& obj)
+{
+    return T(); // or maybe throw?
+}
+
+// specialization for std::vector
+template <typename T>
+void deserialize(std::vector<T>& obj, const Value& object)
+{
+    // vector.resize() cannot be done here, because it'll call T()
+    for (auto& elem : object) {
+        obj.push_back(deserialize<T>(elem)); // push rvalue
     }
 }
 
+// specialization for std::unodered_map
 template <typename K, typename V>
-void cast(const std::map<K, V>& value, Json::Value& root)
+void deserialize(std::unordered_map<K, V>& obj, const Value& object)
 {
-    cast_map(value, root);
-}
-
-template <typename K, typename V>
-void cast(const std::unordered_map<K, V>& value, Json::Value& root)
-{
-    cast_map(value, root);
-}
-
-template <typename T>
-void fromValue(T& value, const Value& root)
-{
-    deserialize(value, root);
-}
-
-template <typename T>
-void fromValue(std::vector<T>& value, const Value& root)
-{
-    value.resize(root.size());
-    for (Json::ArrayIndex i = 0; i < root.size(); ++i) {
-        fromValue(value[i], root[i]);
+    // keys in Json are always strings
+    for (auto& keyStr : object.getMemberNames()) {
+        obj.emplace(fromString<K>(keyStr), deserialize<V>(object[keyStr])); // rvalue, oh yeah
     }
-}
-
-template <typename T>
-void fromValue_map(T& value, const Value& root)
-{
-    for (auto& key : root.getMemberNames()) {
-        // cast from std::string to map's key type (JSON keys are always strings)
-        typename T::key_type mapKey;
-        fromString(mapKey, key);
-        fromValue(value[mapKey], root[key]);
-    }
-}
-
-template <typename K, typename V>
-void fromValue(std::map<K, V>& value, const Value& root)
-{
-    fromValue_map(value, root);
-}
-
-template <typename K, typename V>
-void fromValue(std::unordered_map<K, V>& value, const Value& root)
-{
-    fromValue_map(value, root);
 }
 
 }

@@ -4,34 +4,22 @@
 namespace Json
 {
 
-void cast(const int& value, Json::Value& root)
+template <>
+int deserialize_basic(const Value& obj)
 {
-    root = value;
+    return obj.asInt();
 }
 
-void cast(const float& value, Json::Value& root)
+template <>
+float deserialize_basic(const Value& obj)
 {
-    root = value;
+    return obj.asFloat();
 }
 
-void cast(const std::string& value, Json::Value& root)
+template <>
+std::string deserialize_basic(const Value& obj)
 {
-    root = value;
-}
-
-void fromValue(int& value, const Value& root)
-{
-    value = root.asInt();
-}
-
-void fromValue(float& value, const Value& root)
-{
-    value = root.asFloat();
-}
-
-void fromValue(std::string& value, const Value& root)
-{
-    value = root.asString();
+    return obj.asString();
 }
 
 }

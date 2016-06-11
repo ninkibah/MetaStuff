@@ -23,11 +23,26 @@ struct Person {
         }
     }
 
-    int getAge() const { return age; }
+    int getAge() const {
+        std::cout << "Got age with getter!\n";
+        return age;
+    }
+
+    void setName(const std::string& name)
+    {
+        std::cout << "Name is set by calling setter!\n";
+        this->name = name;
+    }
+
+    const std::string& getName() const
+    {
+        std::cout << "Got name with setter!\n";
+        return name;
+    }
 
     int age;
-    float salary;
     std::string name;
+    float salary;
     std::unordered_map<std::string, std::vector<MovieInfo>> favouriteMovies;
 };
 
@@ -40,10 +55,9 @@ template <>
 inline auto registerMembers<Person>()
 {
     return members(
-        member("age", &Person::age)
-            .addGetterSetter(&Person::getAge, &Person::setAge),
+        member("age", &Person::getAge, &Person::setAge), // access through getter/setter only!
+        member("name", &Person::getName, &Person::setName), // same, but ref getter/setter
         member("salary", &Person::salary),
-        member("name", &Person::name),
         member("favouriteMovies", &Person::favouriteMovies)
     );
 }

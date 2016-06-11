@@ -45,22 +45,16 @@ public:
     using member_type = T;
 
     Member(const char* name, member_ptr_t<Class, T> ptr);
+    Member(const char* name, ref_getter_func_ptr_t<Class, T> getterPtr, ref_setter_func_ptr_t<Class, T> setterPtr);
+    Member(const char* name, val_getter_func_ptr_t<Class, T> getterPtr, val_setter_func_ptr_t<Class, T> setterPtr);
 
     Member& addNonConstGetter(nonconst_ref_getter_func_ptr_t<Class, T> nonConstRefGetterPtr);
-
-    Member& addGetterSetter(ref_getter_func_ptr_t<Class, T> getterPtr, ref_setter_func_ptr_t<Class, T> setterPtr);
-    Member& addConstGetter(ref_getter_func_ptr_t<Class, T> getterPtr);
-    Member& addSetter(ref_setter_func_ptr_t<Class, T> setterPtr);
-
-    // overloads for values
-    Member& addGetterSetter(val_getter_func_ptr_t<Class, T> getterPtr, val_setter_func_ptr_t<Class, T> setterPtr);
-    Member& addConstGetter(val_getter_func_ptr_t<Class, T> getterPtr);
-    Member& addSetter(val_setter_func_ptr_t<Class, T> setterPtr);
 
     // get sets methods can be used to add support
     // for getters/setters for members instead of 
     // direct access to them
     const T& get(const Class& obj) const;
+    T getCopy(const Class& obj) const;
     T& getRef(Class& obj) const;
 
     template <typename V,
@@ -68,10 +62,15 @@ public:
         void set(Class& obj, V&& value) const; // accepts lvalues and rvalues!
 
     const char* getName() const { return name; }
+    bool hasGetter() const { return refGetterPtr || valGetterPtr; }
     bool hasSetter() const { return refSetterPtr || valSetterPtr; }
+    bool canGetConstRef() const { return hasMemberPtr || refGetterPtr; }
+    bool canGetRef() const { return hasMemberPtr || nonConstRefGetterPtr; }
 private:
     const char* name;
     member_ptr_t<Class, T> ptr;
+    bool hasMemberPtr; // first member of class can be nullptr
+                       // so we need this var to know if member ptr is present
 
     ref_getter_func_ptr_t<Class, T> refGetterPtr;
     ref_setter_func_ptr_t<Class, T> refSetterPtr;
@@ -88,6 +87,12 @@ private:
 
 template <typename Class, typename T>
 Member<Class, T> member(const char* name, T Class::* ptr);
+
+template <typename Class, typename T>
+Member<Class, T> member(const char* name, ref_getter_func_ptr_t<Class, T> getterPtr, ref_setter_func_ptr_t<Class, T> setterPtr);
+
+template <typename Class, typename T>
+Member<Class, T> member(const char* name, val_getter_func_ptr_t<Class, T> getterPtr, val_setter_func_ptr_t<Class, T> setterPtr);
 
 } // end of namespace meta
 

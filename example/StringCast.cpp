@@ -22,26 +22,30 @@ std::string castToString(const std::string& value)
 
 // from string
 
-void fromString(bool& obj, const std::string& valueStr)
+template <>
+bool fromString(const std::string& valueStr)
 {
-    if(valueStr == "true") {
-        obj = true;
+    if (valueStr == "true") {
+        return true;
     } else if (valueStr == "false") {
-        obj = false;
+        return false;
     }
 }
 
-void fromString(int& obj, const std::string& valueStr)
+template <>
+int fromString(const std::string& valueStr)
 {
-    obj = std::stoi(valueStr);
+    return std::stoi(valueStr);
 }
 
-void fromString(float& obj, const std::string& valueStr)
+template <>
+float fromString(const std::string& valueStr)
 {
-    obj = std::stof(valueStr);
+    return std::stof(valueStr);
 }
 
-void fromString(std::string& obj, const std::string& valueStr)
+template <>
+std::string fromString(const std::string& valueStr)
 {
-    obj = valueStr;
+    return valueStr;
 }

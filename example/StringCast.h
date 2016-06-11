@@ -14,12 +14,19 @@ std::string castToString(const float& value);
 std::string castToString(const std::string& value);
 
 template <typename T>
-void fromString(T& obj, const std::string& value);
+T fromString(const std::string& value);
 
-void fromString(bool& obj, const std::string& valueStr);
-void fromString(int& obj, const std::string& valueStr);
-void fromString(float& obj, const std::string& valueStr);
-void fromString(std::string& obj, const std::string& valueStr);
+template <>
+bool fromString(const std::string& valueStr);
+
+template <>
+int fromString(const std::string& valueStr);
+
+template <>
+float fromString(const std::string& valueStr);
+
+template <>
+std::string fromString(const std::string& valueStr);
 
 
 // return empty string if no conversion possible
@@ -30,5 +37,7 @@ std::string castToString(const T& /* value */)
 }
 
 template <typename T>
-void fromString(T& /* obj */, const std::string& /* value */)
-{ }
+T fromString(const std::string& /* value */)
+{
+    return T;
+}

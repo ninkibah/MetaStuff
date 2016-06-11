@@ -10,8 +10,6 @@ class Unregistered
 
 #include <Meta.h>
 
-
-
 void printSeparator()
 {
     std::cout << "========================\n";
@@ -23,7 +21,7 @@ int main()
     Person person;
     person.age = 25;
     person.salary = 3.50f;
-    person.name = "Ron Burgandy"; // I'm a person!
+    person.name = "Alex"; // I'm a person!
     
     person.favouriteMovies["Nostalgia Critic"] = { MovieInfo{ "The Room", 8.5f } };
     person.favouriteMovies["John Tron"] = { MovieInfo{ "Goosebumps", 10.0f },
@@ -66,33 +64,31 @@ int main()
     }
 
     // getting setting member values
-    int age = meta::getMemberValue<int>(person, "age");
-    std::cout << "Got person's age: " << age << '\n';
+    auto name = meta::getMemberValue<std::string>(person, "name");
+    std::cout << "Got person's name: " << name << '\n';
 
-    meta::setMemberValue<int>(person, "age", 30);
-    age = meta::getMemberValue<int>(person, "age");
-    std::cout << "Changed person's age to " << age << '\n';
+    meta::setMemberValue<std::string>(person, "name", "Ron Burgundy");
+    name = meta::getMemberValue<std::string>(person, "name");
+    std::cout << "Changed person's name to " << name << '\n';
 
     printSeparator();
 
     // And here's how you can serialize/deserialize
     // (if you write a function for your type. I wrote it for Json::Value! ;D)
-    Json::Value root;
-    serialize(person, root);
-
     std::cout << "Serializing person:" << '\n';
-    std::cout << root << '\n';
+    Json::Value root = Json::serialize(person);
+    std::cout << root << std::endl;
 
     Unregistered y;
-    Json::Value root2;
-    serialize(y, root2);
+    Json::Value root2 = Json::serialize(y);
     std::cout << "Trying to serialize unregistered class:\n";
     std::cout << root2 << '\n';
 
     printSeparator();
 
-    Person person2;
-    deserialize(person2, root); // set values from Json::Value
+    std::cout << "Serializing Person 2 from JSON:\n";
+    auto person2 = Json::deserialize<Person>(root);
+    std::cout << "Person 2 name is " << person2.getName() << " too!" << '\n';
 
 #ifdef _WIN32 // okay, this is not cool code, sorry :D
     system("pause");

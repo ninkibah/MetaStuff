@@ -8,68 +8,72 @@
 #include <json/json-forwards.h>
 
 #include <Meta.h>
-
-template <typename Class,
-    typename = std::enable_if_t<meta::isRegistered<Class>()>>
-void serialize(const Class& obj, Json::Value& root);
-
-template <typename Class,
-    typename = std::enable_if_t<!meta::isRegistered<Class>()>,
-    typename = void>
-void serialize(const Class& obj, Json::Value& root);
-
-template <typename Class,
-    typename = std::enable_if_t<meta::isRegistered<Class>()>>
-void deserialize(Class& obj, const Json::Value& root);
-
-template <typename Class,
-    typename = std::enable_if_t<!meta::isRegistered<Class>()>,
-    typename = void>
-void deserialize(Class& obj, const Json::Value& root);
+#include "StringCast.h"
 
 namespace Json
 {
-    // Cast 
-    template <typename T>
-    void cast(const T& value, Json::Value& root);
 
-    void cast(const int& value, Json::Value& root);
-    void cast(const float& value, Json::Value& root);
-    void cast(const std::string& value, Json::Value& root);
+/////////////////// SERIALIZATION
 
-    template <typename T>
-    void cast(const std::vector<T>& value, Json::Value& root);
+template <typename Class,
+    typename = std::enable_if_t<std::is_constructible<Value, Class>::value>>
+Value serialize(const Class& obj);
 
-    template <typename T>
-    void cast_map(const T& value, Json::Value& root);
+template <typename Class,
+    typename = std::enable_if_t<!std::is_constructible<Value, Class>::value>,
+    typename = void>
+Value serialize(const Class& obj);
 
-    template <typename K, typename V>
-    void cast(const std::map<K, V>& value, Json::Value& root);
+template <typename Class,
+    typename = std::enable_if_t <meta::isRegistered<Class>()>>
+Value serialize_impl(const Class& obj);
 
-    template <typename K, typename V>
-    void cast(const std::unordered_map<K, V>& value, Json::Value& root);
+template <typename Class,
+    typename = std::enable_if_t <!meta::isRegistered<Class>()>,
+    typename = void>
+Value serialize_impl(const Class& obj);
 
-    // From value 
+template <typename Class>
+Value serialize_basic(const Class& obj);
+// specialization for std::vector
+template <typename T>
+Value serialize_basic(const std::vector<T>& obj);
 
-    template <typename T>
-    void fromValue(T& value, const Value& root);
+// specialization for std::unodered_map
+template <typename K, typename V>
+Value serialize_basic(const std::unordered_map<K, V>& obj);
 
-    void fromValue(int& value, const Value& root);
-    void fromValue(float& value, const Value& root);
-    void fromValue(std::string& value, const Value& root);
 
-    template <typename T>
-    void fromValue(std::vector<T>& value, const Value& root);
+/////////////////// DESERIALIZATION
 
-    template <typename T>
-    void fromValue_map(T& value, const Value& root);
+template<typename Class>
+Class deserialize(const Value& obj);
 
-    template <typename K, typename V>
-    void fromValue(std::map<K, V>& value, const Value& root);
+template <typename Class,
+    typename = std::enable_if_t<meta::isRegistered<Class>()>>
+void deserialize(Class& obj, const Value& object);
 
-    template <typename K, typename V>
-    void fromValue(std::unordered_map<K, V>& value, const Value& root);
+template <typename Class,
+    typename = std::enable_if_t<!meta::isRegistered<Class>()>,
+    typename = void>
+void deserialize(Class& obj, const Value& object);
+
+template <typename T>
+T deserialize_basic(const Value& obj);
+
+// specializations
+template <> int deserialize_basic(const Value& obj);
+template <> float deserialize_basic(const Value& obj);
+template <> std::string deserialize_basic(const Value& obj);
+
+// specialization for std::vector
+template <typename T>
+void deserialize(std::vector<T>& obj, const Value& object);
+
+// specialization for std::unodered_map
+template <typename K, typename V>
+void deserialize(std::unordered_map<K, V>& obj, const Value& object);
+
 }
-
 
 #include "JsonCast.inl"

@@ -41,10 +41,14 @@ struct Person {
     }
 
     int getAge() const { return age; }
+    
+    void setName(const std::string& name) { this->name = name; }
+
+    const std::string& getName() const { return name; }
 
     int age;
-    float salary;
     std::string name;
+    float salary;
     std::unordered_map<std::string, std::vector<MovieInfo>> favouriteMovies;
 };
 
@@ -66,10 +70,9 @@ template <>
 inline auto registerMembers<Person>()
 {
     return members(
-        member("age")
-            .addGetterSetter(&Person::getAge, &Person::setAge),
+        member("age", &Person::getAge, &Person::setAge), // access through getter/setter only!
+        member("name", &Person::getName, &Person::setName), // same, but ref getter/setter
         member("salary", &Person::salary),
-        member("name", &Person::name),
         member("favouriteMovies", &Person::favouriteMovies)
     );
 }
@@ -102,10 +105,9 @@ Member class has the following functions:
 
 * `const char* getName()` - returns `const char*` of member name you've set during "registration"
 * `const T& get(const Class& obj)` - gets const reference to the member
+* `T getCopy(const Class& obj)` - gets copy of member (useful to if only value getter is provided, can't return const T& in that case)
 * `void set(const Class& obj, V&& value)` - sets value to the member, lvalues and rvalues are accepted
 * `T& getRef(const Class& obj)` - gets non const reference to the member
-
-If you provide Member with getters and setters it will use these functions for getting/setting members, otherwise the member will be accessed directly with pointer to member.
 
 In general `Meta::getMembers<T>()` template function specialization should have a following form and should be put in header with you class (see comments in Meta.h for more info)
 
@@ -127,15 +129,27 @@ inline auto registerMembers<SomeClass>()
 }
 ```
 
-You can also add getters/setters and add non-const getter like this:
-
+You can register members by using their data member pointer:
 ```c++
 member("someMember", &SomeClass::someMember)
-    .addGetterSetter(&SomeClass::getSomeMember, &SomeClass::setSomeMember)
-    .addNonConstGetter(&SomeClass::getSomeMemberRef)
+```
+
+Or use getters/setters:
+
+```c++
+member("someMember", &SomeClass::getSomeMember, &SomeClass::setSomeMember)
+```
+
+If you provide Member with getters and setters it will use these functions for getting/setting members, otherwise the member will be accessed directly with pointer to member.
+
+And you can add non-const getter (not necessary):
+
+```c++
+member(...).addNonConstGetter(&SomeClass::getSomeMemberRef)
 ```
 
 Getters and setters can be by-value:
+
 ```c++
 // T is member type
 T SomeClass::getSomeMember() const { return someMember; }
@@ -152,7 +166,7 @@ void SomeClass::getSomeMember(const T& value) { someMember = value; }
 Non-const getter has the following form:
 ```c++
 // T is member type
-T& SomeClass::getSomeMember() { return someMember; }
+T& SomeClass::getSomeMemberRef() { return someMember; }
 ```
 
 Getters and setters are always called (if they're present) in `Member::get/set` functions, otherwise the pointer to member is used. The same applies to non-const getter in Member::getRef.
