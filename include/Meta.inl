@@ -3,7 +3,7 @@
 
 #include "Member.h" 
 #include "template_helpers.h"
-#include "detail/MetaGetter.h"
+#include "detail/MetaHolder.h"
 
 namespace meta
 {
@@ -25,7 +25,7 @@ inline auto registerMembers()
 template <typename Class>
 const auto& getMembers()
 {
-    return detail::MetaGetter<Class, decltype(registerMembers<Class>())>::getMembers();
+    return detail::MetaHolder<Class, decltype(registerMembers<Class>())>::members;
 }
 
 template <typename Class>
@@ -70,8 +70,7 @@ void doForMember(const std::string& name, F&& f)
         [&](const auto& member)
         {
             if (member.getName() == name) {
-                using MemberT =
-                    typename std::decay_t<decltype(member)>::member_type; // get type of member
+                using MemberT = meta::get_member_type<decltype(member)>;
                 assert((std::is_same<MemberT, T>::value) && "Member doesn't have type T");
                 call_if<std::is_same<MemberT, T>::value>(std::forward<F>(f), member);
             }

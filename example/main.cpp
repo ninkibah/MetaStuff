@@ -87,6 +87,7 @@ int main()
     printSeparator();
 
     std::cout << "Serializing Person 2 from JSON:\n";
+
     auto person2 = Json::deserialize<Person>(root);
     std::cout << "Person 2 name is " << person2.getName() << " too!" << '\n';
 

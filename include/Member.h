@@ -38,6 +38,10 @@ using val_setter_func_ptr_t = void (Class::*)(T);
 template <typename Class, typename T>
 using nonconst_ref_getter_func_ptr_t = T& (Class::*)();
 
+// MemberType is Member<T, Class>
+template <typename MemberType>
+using get_member_type = typename std::decay_t<MemberType>::member_type;
+
 template <typename Class, typename T>
 class Member {
 public:

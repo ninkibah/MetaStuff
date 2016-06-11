@@ -98,7 +98,7 @@ void deserialize(Class& obj, const Value& object)
             {
                 auto& objName = object[member.getName()];
                 if (!objName.isNull()) {
-                    using MemberT = typename std::decay<decltype(member)>::type::member_type;
+                    using MemberT = meta::get_member_type<decltype(member)>;
                     if (member.hasSetter()) {
                         member.set(obj, deserialize<MemberT>(objName));
                     } else if (member.canGetRef()) {

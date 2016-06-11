@@ -1,7 +1,7 @@
 /* -----------------------------------------------------------------------------------------------
 
-MetaHolder holds all Member objects constructed via meta::registerMembers<T> call. 
-Getting those members back is tricky and this is done by MetaGetter (see MetaGetter.h for details)
+MetaHolder holds all Member objects constructed via meta::registerMembers<T> call.
+If the class is not registered, members is std::tuple<>
 
 -------------------------------------------------------------------------------------------------*/
 
@@ -14,13 +14,14 @@ namespace meta
 namespace detail
 {
 
-template <typename T, typename... Args>
+template <typename T, typename TupleType>
 struct MetaHolder {
-    static std::tuple<Args...> members;
+    static TupleType members;
 };
 
-template <typename T, typename... Args>
-std::tuple<Args...> MetaHolder<T, Args...>::members = registerMembers<T>();
+template <typename T, typename TupleType>
+TupleType MetaHolder<T, TupleType>::members = registerMembers<T>();
+
 
 } // end of namespace detail
 } // end of namespace meta
