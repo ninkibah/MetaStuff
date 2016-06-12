@@ -55,7 +55,7 @@ public:
     Member& addNonConstGetter(nonconst_ref_getter_func_ptr_t<Class, T> nonConstRefGetterPtr);
 
     // get sets methods can be used to add support
-    // for getters/setters for members instead of 
+    // for getters/setters for members instead of
     // direct access to them
     const T& get(const Class& obj) const;
     T getCopy(const Class& obj) const;

@@ -1,7 +1,7 @@
 #include <cassert>
 #include <tuple>
 
-#include "Member.h" 
+#include "Member.h"
 #include "template_helpers.h"
 #include "detail/MetaHolder.h"
 
@@ -20,6 +20,18 @@ template <typename Class>
 inline auto registerMembers()
 {
     return std::make_tuple();
+}
+
+template <typename Class>
+constexpr auto registerName()
+{
+    return "";
+}
+
+template <typename Class>
+constexpr auto getName()
+{
+    return detail::MetaHolder<Class, decltype(registerMembers<Class>())>::name();
 }
 
 template <typename Class>

@@ -32,6 +32,7 @@ auto meta::registerMembers<YourClass>()
 #endif
 
 #include <type_traits>
+#include <string>
 
 // type_list is array of types
 template <typename... Args>
@@ -52,6 +53,14 @@ auto members(Args&&... args);
 // function used for registration of classes by user
 template <typename Class>
 inline auto registerMembers();
+
+// function used for registration of class name by user
+template <typename Class>
+constexpr auto registerName();
+
+// returns set name for class
+template <typename Class>
+constexpr auto getName();
 
 // returns std::tuple of Members
 template <typename Class>
