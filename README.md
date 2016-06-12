@@ -96,6 +96,8 @@ meta::doForAllMembers<SomeClass>(/* your lambda */);
 ```
 
 Your lambda should have one parameter which will be an instance of Member. Calling ```meta::doForAllMembers<T>``` gives you ability to do something with each registered member of class T.
+Inside your lambda you can get member type like this (`MemberType` = `T` when `decltype(member)` = `Member<Class, T>`):
+```using MemberType = meta::get_member_type<decltype(member)>;```
 (See **example/JsonCast.inl** for examples of such lambdas).
 
 Some docs (will be better in future!)

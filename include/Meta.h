@@ -2,19 +2,24 @@
 
 meta::registerMembers<T> is used for class registration and it has the following form when specialized:
 
-template <>
-auto meta::registerMembers<YourClass>()
+namespace meta
 {
-    return std::make_tuple(
+
+template <>
+auto registerMembers<YourClass>()
+{
+    return members(
         member(...),
         ...
     );
 }
 
+}
+
 ! Some important details:
 1) This specialization should be defined in header, because compiler needs to deduce the return type.
-2) This function is called by MetaHolder during registerMembers initialization, so the tuple is created
-   only once.
+2) This function is called by MetaHolder during it's static member initialization, so the tuple is created
+   only once and then registerMembers function is never called again.
 3) registerMembers could easily be a free function, but befriending such function is hard if you want to
    be able to get pointers to private members... Writing "friend class Meta" in your preferred class
    is just much easier. Though this might be somehow fixed in the future.
