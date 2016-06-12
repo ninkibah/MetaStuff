@@ -60,6 +60,7 @@ public:
     const T& get(const Class& obj) const;
     T getCopy(const Class& obj) const;
     T& getRef(Class& obj) const;
+    member_ptr_t<Class, T> getPtr() const { return ptr; }
 
     template <typename V,
         typename = std::enable_if_t<std::is_constructible<T, V>::value>>
