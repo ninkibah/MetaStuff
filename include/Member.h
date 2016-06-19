@@ -60,13 +60,14 @@ public:
     const T& get(const Class& obj) const;
     T getCopy(const Class& obj) const;
     T& getRef(Class& obj) const;
-    member_ptr_t<Class, T> getPtr() const { return ptr; }
+    member_ptr_t<Class, T> getPtr() const;
 
     template <typename V,
         typename = std::enable_if_t<std::is_constructible<T, V>::value>>
         void set(Class& obj, V&& value) const; // accepts lvalues and rvalues!
 
     const char* getName() const { return name; }
+    bool hasPtr() const { return hasMemberPtr; }
     bool hasGetter() const { return refGetterPtr || valGetterPtr; }
     bool hasSetter() const { return refSetterPtr || valSetterPtr; }
     bool canGetConstRef() const { return hasMemberPtr || refGetterPtr; }

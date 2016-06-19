@@ -81,6 +81,14 @@ T& Member<Class, T>::getRef(Class& obj) const
     throw std::runtime_error("Cannot return ref to member: no getter or member pointer set");
 }
 
+template <typename Class, typename T>
+member_ptr_t<Class, T> Member<Class, T>::getPtr() const {
+    if (hasPtr()) {
+        return ptr;
+    }
+    throw std::runtime_error("Cannot get pointer to member: it wasn't set");
+}
+
 template<typename Class, typename T>
 template <typename V, typename>
 void Member<Class, T>::set(Class& obj, V&& value) const
