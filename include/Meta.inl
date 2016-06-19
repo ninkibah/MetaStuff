@@ -48,7 +48,7 @@ constexpr bool isRegistered()
 
 // Check if Class has non-default ctor registered
 template <typename Class>
-constexpr static bool ctorRegistered()
+constexpr bool ctorRegistered()
 {
     return !std::is_same<type_list<>, constructor_arguments<Class>>::value;
 }
