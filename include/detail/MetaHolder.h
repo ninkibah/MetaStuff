@@ -17,6 +17,10 @@ namespace detail
 template <typename T, typename TupleType>
 struct MetaHolder {
     static TupleType members;
+    static const char* name() 
+    {
+        return registerName<T>();
+    }
 };
 
 template <typename T, typename TupleType>

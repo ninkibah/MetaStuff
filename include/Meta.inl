@@ -1,7 +1,7 @@
 #include <cassert>
 #include <tuple>
 
-#include "Member.h" 
+#include "Member.h"
 #include "template_helpers.h"
 #include "detail/MetaHolder.h"
 
@@ -23,6 +23,18 @@ inline auto registerMembers()
 }
 
 template <typename Class>
+constexpr auto registerName()
+{
+    return "";
+}
+
+template <typename Class>
+constexpr auto getName()
+{
+    return detail::MetaHolder<Class, decltype(registerMembers<Class>())>::name();
+}
+
+template <typename Class>
 const auto& getMembers()
 {
     return detail::MetaHolder<Class, decltype(registerMembers<Class>())>::members;
@@ -36,7 +48,7 @@ constexpr bool isRegistered()
 
 // Check if Class has non-default ctor registered
 template <typename Class>
-constexpr static bool ctorRegistered()
+constexpr bool ctorRegistered()
 {
     return !std::is_same<type_list<>, constructor_arguments<Class>>::value;
 }
