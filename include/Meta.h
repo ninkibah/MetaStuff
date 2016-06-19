@@ -32,6 +32,8 @@ auto meta::registerMembers<YourClass>()
 #endif
 
 #include <type_traits>
+#include <tuple>
+#include <utility>
 #include <string>
 
 // type_list is array of types
