@@ -25,7 +25,7 @@ decltype(auto) makeIndexSequence()
 // Seems to be fixed in VS 2015 Update 3
 
 template <>
-decltype(auto) makeIndexSequence<1>()
+inline decltype(auto) makeIndexSequence<1>()
 {
     return std::index_sequence<0>();
 }
