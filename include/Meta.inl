@@ -2,7 +2,7 @@
 #include <tuple>
 
 #include "Member.h"
-#include "template_helpers.h"
+#include "detail/template_helpers.h"
 #include "detail/MetaHolder.h"
 
 namespace meta
@@ -71,8 +71,8 @@ bool hasMember(const std::string& name)
 template <typename Class, typename F>
 void doForAllMembers(F&& f)
 {
-    static_assert(isRegistered<Class>(), "Class is not registered");
-    for_tuple(std::forward<F>(f), getMembers<Class>());
+    //static_assert(isRegistered<Class>(), "Class is not registered");
+    detail::for_tuple(std::forward<F>(f), getMembers<Class>());
 }
 
 template <typename Class, typename T, typename F>
@@ -84,7 +84,7 @@ void doForMember(const std::string& name, F&& f)
             if (member.getName() == name) {
                 using MemberT = meta::get_member_type<decltype(member)>;
                 assert((std::is_same<MemberT, T>::value) && "Member doesn't have type T");
-                call_if<std::is_same<MemberT, T>::value>(std::forward<F>(f), member);
+                detail::call_if<std::is_same<MemberT, T>::value>(std::forward<F>(f), member);
             }
         }
     );
