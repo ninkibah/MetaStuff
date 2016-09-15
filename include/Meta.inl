@@ -54,13 +54,13 @@ constexpr bool ctorRegistered()
 }
 
 template <typename Class>
-bool hasMember(const std::string& name)
+bool hasMember(const char* name)
 {
     bool found = false;
     doForAllMembers<Class>(
         [&found, &name](const auto& member)
         {
-            if (member.getName() == name) {
+            if (!strcmp(name, member.getName())) {
                 found = true;
             }
         }
@@ -68,20 +68,27 @@ bool hasMember(const std::string& name)
     return found;
 }
 
-template <typename Class, typename F>
+template <typename Class, typename F, typename>
 void doForAllMembers(F&& f)
 {
-    //static_assert(isRegistered<Class>(), "Class is not registered");
     detail::for_tuple(std::forward<F>(f), getMembers<Class>());
 }
 
+// version for non-registered classes (to generate less template stuff)
+template <typename Class, typename F,
+    typename, typename>
+    void doForAllMembers(F&& f)
+{
+    // do nothing! Nothing gets generated
+}
+
 template <typename Class, typename T, typename F>
-void doForMember(const std::string& name, F&& f)
+void doForMember(const char* name, F&& f)
 {
     doForAllMembers<Class>(
         [&](const auto& member)
         {
-            if (member.getName() == name) {
+            if (!strcmp(name, member.getName())) {
                 using MemberT = meta::get_member_type<decltype(member)>;
                 assert((std::is_same<MemberT, T>::value) && "Member doesn't have type T");
                 detail::call_if<std::is_same<MemberT, T>::value>(std::forward<F>(f), member);
@@ -91,7 +98,7 @@ void doForMember(const std::string& name, F&& f)
 }
 
 template <typename T, typename Class>
-T getMemberValue(Class& obj, const std::string& name)
+T getMemberValue(Class& obj, const char* name)
 {
     T value;
     doForMember<Class, T>(name,
@@ -105,7 +112,7 @@ T getMemberValue(Class& obj, const std::string& name)
 
 template <typename T, typename Class, typename V,
     typename>
-void setMemberValue(Class& obj, const std::string& name, V&& value)
+void setMemberValue(Class& obj, const char* name, V&& value)
 {
     doForMember<Class, T>(name,
         [&obj, value = std::forward<V>(value)](const auto& member)

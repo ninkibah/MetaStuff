@@ -39,7 +39,6 @@ auto registerMembers<YourClass>()
 #include <type_traits>
 #include <tuple>
 #include <utility>
-#include <string>
 
 // type_list is array of types
 template <typename... Args>
@@ -95,23 +94,31 @@ constexpr bool ctorRegistered();
 
 // Check if class T has member
 template <typename Class>
-bool hasMember(const std::string& name);
+bool hasMember(const char* name);
 
-template <typename Class, typename F>
+
+template <typename Class, typename F,
+    typename = std::enable_if_t<isRegistered<Class>()>>
+void doForAllMembers(F&& f);
+
+// version for non-registered classes (to generate less template stuff)
+template <typename Class, typename F,
+    typename = std::enable_if_t<!isRegistered<Class>()>,
+    typename = void>
 void doForAllMembers(F&& f);
 
 // Do F for member named 'name' with type T. It's important to pass correct type of the member
 template <typename Class, typename T, typename F>
-void doForMember(const std::string& name, F&& f);
+void doForMember(const char* name, F&& f);
 
 // Get value of the member named 'name'
 template <typename T, typename Class>
-T getMemberValue(Class& obj, const std::string& name);
+T getMemberValue(Class& obj, const char* name);
 
 // Set value of the member named 'name'
 template <typename T, typename Class, typename V,
     typename = std::enable_if_t<std::is_constructible<T, V>::value>>
-void setMemberValue(Class& obj, const std::string& name, V&& value);
+void setMemberValue(Class& obj, const char* name, V&& value);
 
 }
 
