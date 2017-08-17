@@ -46,7 +46,8 @@ decltype(auto) apply(F&& f, Tuple&& t)
 template <typename F, typename TupleT>
 void for_tuple(F&& f, TupleT&& tuple)
 {
-    apply(
+    // ambiguity with std::apply
+    meta::detail::apply(
         [&f](auto&&... elems) {
             for_each_arg(f,
                          std::forward<decltype(elems)>(elems)...);

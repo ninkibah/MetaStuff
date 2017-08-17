@@ -77,7 +77,7 @@ void doForAllMembers(F&& f)
 // version for non-registered classes (to generate less template stuff)
 template <typename Class, typename F,
     typename, typename>
-    void doForAllMembers(F&& f)
+    void doForAllMembers(F&& /*f*/)
 {
     // do nothing! Nothing gets generated
 }
