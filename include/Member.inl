@@ -123,4 +123,30 @@ Member<Class, T> member(const char* name, val_getter_func_ptr_t<Class, T> getter
     return Member<Class, T>(name, getterPtr, setterPtr);
 }
 
+// read only
+template <typename Class, typename T>
+Member<Class, T> member(const char* name, ref_getter_func_ptr_t<Class, T> getterPtr)
+{
+    return Member<Class, T>(name, getterPtr, setterPtr);
+}
+
+template <typename Class, typename T>
+Member<Class, T> member(const char* name, val_getter_func_ptr_t<Class, T> getterPtr)
+{
+    return Member<Class, T>(name, getterPtr, setterPtr);
+}
+
+// set only 
+template <typename Class, typename T>
+Member<Class, T> member(const char* name, ref_setter_func_ptr_t<Class, T> setterPtr)
+{
+    return Member<Class, T>(name, nullptr, setterPtr);
+}
+
+template <typename Class, typename T>
+Member<Class, T> member(const char* name, val_setter_func_ptr_t<Class, T> setterPtr)
+{
+    return Member<Class, T>(name, nullptr, setterPtr);
+}
+
 } // end of namespace meta
