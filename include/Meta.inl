@@ -1,5 +1,6 @@
 #include <cassert>
 #include <tuple>
+#include <cstring>
 
 #include "Member.h"
 #include "detail/template_helpers.h"
