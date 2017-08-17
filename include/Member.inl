@@ -74,7 +74,7 @@ template <typename Class, typename T>
 T& Member<Class, T>::getRef(Class& obj) const
 {
     if (nonConstRefGetterPtr) {
-        (obj.*nonConstRefGetterPtr)();
+        return (obj.*nonConstRefGetterPtr)();
     } else if(hasMemberPtr) {
         return obj.*ptr;
     }
