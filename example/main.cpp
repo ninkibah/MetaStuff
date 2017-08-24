@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include <json/json.h>
-
+#include <json.hpp>
 #include "JsonCast.h"
+
 #include "Person.h"
 
 class Unregistered
@@ -15,33 +15,32 @@ void printSeparator()
     std::cout << "========================\n";
 }
 
-
 int main()
 {
     Person person;
     person.age = 25;
     person.salary = 3.50f;
     person.name = "Alex"; // I'm a person!
-    
+
     person.favouriteMovies["Nostalgia Critic"] = { MovieInfo{ "The Room", 8.5f } };
     person.favouriteMovies["John Tron"] = { MovieInfo{ "Goosebumps", 10.0f },
-                                            MovieInfo{ "Talking Cat", 9.0f } };
+        MovieInfo{ "Talking Cat", 9.0f } };
 
     // printing members of different classes
     std::cout << "Members of class Person:\n";
     meta::doForAllMembers<Person>(
         [](const auto& member)
-        {
-            std::cout << "* " << member.getName() << '\n';
-        }
+    {
+        std::cout << "* " << member.getName() << '\n';
+    }
     );
 
     std::cout << "Members of class MovieInfo:\n";
     meta::doForAllMembers<MovieInfo>(
         [](const auto& member)
-        {
-            std::cout << "* " << member.getName() << '\n';
-        }
+    {
+        std::cout << "* " << member.getName() << '\n';
+    }
     );
 
     printSeparator();
@@ -74,21 +73,19 @@ int main()
     printSeparator();
 
     // And here's how you can serialize/deserialize
-    // (if you write a function for your type. I wrote it for Json::Value! ;D)
+    // (if you write a function for your type)
     std::cout << "Serializing person:" << '\n';
-    Json::Value root = Json::serialize(person);
-    std::cout << root << std::endl;
+    json root = person;
+    std::cout << std::setw(4) << root << std::endl;
 
-    Unregistered y;
-    Json::Value root2 = Json::serialize(y);
-    std::cout << "Trying to serialize unregistered class:\n";
-    std::cout << root2 << '\n';
+    //Unregistered y;
+    //json root2 = y; // this will fail at compile time
 
     printSeparator();
 
     std::cout << "Serializing Person 2 from JSON:\n";
 
-    auto person2 = Json::deserialize<Person>(root);
+    auto person2 = root.get<Person>();
     std::cout << "Person 2 name is " << person2.getName() << " too!" << '\n';
 
 #ifdef _WIN32 // okay, this is not cool code, sorry :D

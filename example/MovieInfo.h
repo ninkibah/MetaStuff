@@ -9,8 +9,7 @@ struct MovieInfo {
 
 #include <Meta.h>
 
-namespace meta
-{
+namespace meta {
 
 template <>
 inline auto registerMembers<MovieInfo>()
@@ -21,4 +20,4 @@ inline auto registerMembers<MovieInfo>()
     );
 }
 
-}
+} // end of namespace meta

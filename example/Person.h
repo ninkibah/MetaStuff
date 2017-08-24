@@ -15,7 +15,7 @@ struct Person {
 
     void setAge(int a)
     {
-        std::cout << "Age is set by calling setter!\n";
+        //std::cout << "Age is set by calling setter!\n";
         if (a >= 0 && a < 128) { // sorry, if you're older than 128
             age = a;
         } else {
@@ -30,13 +30,13 @@ struct Person {
 
     void setName(const std::string& name)
     {
-        std::cout << "Name is set by calling setter!\n";
+        //std::cout << "Name is set by calling setter!\n";
         this->name = name;
     }
 
     const std::string& getName() const
     {
-        std::cout << "Got name with setter!\n";
+        std::cout << "Got name with getter!\n";
         return name;
     }
 
@@ -48,8 +48,7 @@ struct Person {
 
 #include <Meta.h>
 
-namespace meta
-{
+namespace meta {
 
 template <>
 inline auto registerMembers<Person>()
@@ -62,4 +61,4 @@ inline auto registerMembers<Person>()
     );
 }
 
-}
+} // end of namespace meta
