@@ -15,7 +15,7 @@ void from_json(const json& j, T& obj)
 namespace meta
 {
 
-/////////////////// DESERIALIZATION
+/////////////////// SERIALIZATION
 
 template <typename Class,
     typename>
