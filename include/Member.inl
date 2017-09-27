@@ -127,13 +127,13 @@ Member<Class, T> member(const char* name, val_getter_func_ptr_t<Class, T> getter
 template <typename Class, typename T>
 Member<Class, T> member(const char* name, ref_getter_func_ptr_t<Class, T> getterPtr)
 {
-    return Member<Class, T>(name, getterPtr, setterPtr);
+    return Member<Class, T>(name, getterPtr, nullptr);
 }
 
 template <typename Class, typename T>
 Member<Class, T> member(const char* name, val_getter_func_ptr_t<Class, T> getterPtr)
 {
-    return Member<Class, T>(name, getterPtr, setterPtr);
+    return Member<Class, T>(name, getterPtr, nullptr);
 }
 
 // set only 
