@@ -39,5 +39,5 @@ std::string castToString(const T& /* value */)
 template <typename T>
 T fromString(const std::string& /* value */)
 {
-    return T;
+    return T();
 }
