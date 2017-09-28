@@ -3,6 +3,8 @@ Meta stuff WIP
 
 This is the code I use in my game for all serialization/deserialization/introspection stuff.
 
+[This article](https://eliasdaler.github.io/meta-stuff/) explains how it can be used and how it was made in detail.
+
 Features
 ----
 
