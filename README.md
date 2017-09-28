@@ -23,7 +23,7 @@ Requirements
 
 Dependencies
 -----
-- None! ([JsonCpp](https://github.com/open-source-parsers/jsoncpp) is used in example, but you can use any library you want for serialization)
+- Just standard library. ([JSON for Modern C++](https://github.com/nlohmann/json) is used in example, but you can use any library you want for serialization)
 
 Example
 ----
