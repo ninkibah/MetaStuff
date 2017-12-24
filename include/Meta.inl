@@ -36,6 +36,12 @@ constexpr auto getName()
 }
 
 template <typename Class>
+constexpr std::size_t getMemberCount()
+{
+	return std::tuple_size<decltype(registerMembers<Class>())>::value;
+}
+
+template <typename Class>
 const auto& getMembers()
 {
     return detail::MetaHolder<Class, decltype(registerMembers<Class>())>::members;
