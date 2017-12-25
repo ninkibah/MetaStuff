@@ -68,6 +68,10 @@ constexpr auto registerName();
 template <typename Class>
 constexpr auto getName();
 
+// returns the number of registered members of the class
+template <typename Class>
+constexpr std::size_t getMemberCount();
+
 // returns std::tuple of Members
 template <typename Class>
 const auto& getMembers();

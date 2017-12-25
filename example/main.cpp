@@ -48,13 +48,16 @@ int main()
     // checking if classes are registered
     if (meta::isRegistered<Person>()) {
         std::cout << "Person class is registered\n";
+		std::cout << "It has " << meta::getMemberCount<Person>() << " members registered.\n";
     }
 
     // meta::isRegistered is constexpr, so can be used in enable_if and static_assert!
     static_assert(meta::isRegistered<Person>(), "Person class is not registered!");
+	static_assert(meta::getMemberCount<Person>() == 4, "Person does not have 4 members registered?");
 
     if (!meta::isRegistered<Unregistered>()) {
         std::cout << "Unregistered class is unregistered\n";
+		std::cout << "It has " << meta::getMemberCount<Unregistered>() << " members registered.\n";
     }
 
     // checking if class has a member

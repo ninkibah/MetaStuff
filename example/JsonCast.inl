@@ -95,9 +95,9 @@ void deserialize(Class& obj, const json& object)
                 if (!objName.is_null()) {
                     using MemberT = meta::get_member_type<decltype(member)>;
                     if (member.hasSetter()) {
-                        member.set(obj, objName.get<MemberT>());
+                        member.set(obj, objName.template get<MemberT>());
                     } else if (member.canGetRef()) {
-                        member.getRef(obj) = objName.get<MemberT>();
+                        member.getRef(obj) = objName.template get<MemberT>();
                     } else {
                         throw std::runtime_error("Error: can't deserialize member because it's read only");
                     }
