@@ -1,4 +1,4 @@
-#include "stringcast.h"
+#include "StringCast.h"
 
 std::string castToString(const bool& value)
 {
