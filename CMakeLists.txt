@@ -1,5 +1,5 @@
-cmake_minimum_required( VERSION 2.8 )
-project( MetaStuff )
+cmake_minimum_required(VERSION 3.0)
+project(MetaStuff VERSION 0.0.0.1 LANGUAGES CXX)
 
 option(WITH_EXAMPLES "Build examples" ON)
 
