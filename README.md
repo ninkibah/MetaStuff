@@ -5,7 +5,7 @@ This is the code I use in my game for all serialization/deserialization/introspe
 
 [This article](https://eliasdaler.github.io/meta-stuff/) explains how it can be used and how it was made in detail.
 
-See [metastuff-clang-generator] for automatic registration of classes in MetaStuff!
+See [metastuff-clang-generator](https://github.com/w0land/metastuff-clang-generator) for automatic registration of classes in MetaStuff!
 
 Features
 ----
