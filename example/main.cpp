@@ -65,10 +65,14 @@ int main()
         std::cout << "Person has member named 'age'\n";
     }
 
-    // getting setting member values
+    // getting members
+    auto age = meta::getMemberValue<int>(person, "age");
+    std::cout << "Got person's age: " << age << '\n';
+
     auto name = meta::getMemberValue<std::string>(person, "name");
     std::cout << "Got person's name: " << name << '\n';
 
+    // setting members
     meta::setMemberValue<std::string>(person, "name", "Ron Burgundy");
     name = meta::getMemberValue<std::string>(person, "name");
     std::cout << "Changed person's name to " << name << '\n';

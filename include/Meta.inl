@@ -111,7 +111,7 @@ T getMemberValue(Class& obj, const char* name)
     doForMember<Class, T>(name,
         [&value, &obj](const auto& member)
         {
-            value = member.get(obj);
+            value = member.getCopy(obj);
         }
     );
     return value;
