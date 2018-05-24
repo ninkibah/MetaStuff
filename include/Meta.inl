@@ -98,7 +98,9 @@ void doForMember(const char* name, F&& f)
             if (!strcmp(name, member.getName())) {
                 using MemberT = meta::get_member_type<decltype(member)>;
                 assert((std::is_same<MemberT, T>::value) && "Member doesn't have type T");
-                detail::call_if<std::is_same<MemberT, T>::value>(std::forward<F>(f), member);
+                if constexpr (std::is_same<MemberT, T>::value) {
+                    f(member);
+                }
             }
         }
     );
