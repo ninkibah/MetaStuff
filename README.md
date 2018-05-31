@@ -13,6 +13,7 @@ Features
 - **Strongly typed and doesn't use RTTI or virtual functions in any way**. You can iterate over class members and you still know member's type, there's no type erasure and it's all very fast
 - **No dependencies**. You have to use modern C++ compiler which supports C++14, though. (VS 2015, GCC 5+, Clang 3.8)
 - **Serialization is not limited to any format**. There's no standard way of doing serialization. You can implement it yourself for your own format. (See JSON example to see how it can be done)
+- **You don't need to modify classes that you want to serialize/deserialize**. Everything is done through defining template instantiations of MetaStuff's getMembers<T> function. No modifications to classes you want to serialize is needed!
 
 The lib is still in development, so it's not recommended to use it for anything really serious as lots of stuff can change!
 Still, use it as you like, it's MIT licensed after all.
@@ -185,6 +186,11 @@ class SomeClass {
         // Just ignore it, it's a bug (`#pragma warning (disable : 4396)` is added in Meta.h
 };
 ```
+
+Inheritance
+---
+
+If you have a base class registered, you can combine its members tuple with a one from derived class. See [this example](https://gist.github.com/eliasdaler/45bf3f583cd4a41019b9802c198e6f41) of how you can do it.
 
 License
 ---
