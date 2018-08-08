@@ -1,18 +1,20 @@
-cmake_minimum_required( VERSION 2.8 )
-project( MetaStuffTest)
+cmake_minimum_required(VERSION 3.0)
+project(MetaStuffTest)
 
-set(exename meta-stuff-test)
+set(exe_name meta-stuff-test)
 
-add_executable(${exename} main.cpp)
-target_include_directories(${exename} PRIVATE
+add_executable(${exe_name} main.cpp)
+target_include_directories(${exe_name} PRIVATE
     nlohmann_json # json in subdir
-    ../include    # meta in parent tree
-    )
-target_sources(${exename} PRIVATE
+)
+
+target_sources(${exe_name} PRIVATE
     StringCast.cpp
     StringCast.h
     JsonCast.h
     MovieInfo.h
     Person.h
     JsonCast.inl
-    )
+)
+
+target_link_libraries(${exe_name} PRIVATE MetaStuff)
