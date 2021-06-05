@@ -6,7 +6,7 @@ T - type of that member
 
 Member contains pointer to data member which can be used to get / set stuff
 Different getters and setters can be added via fluent interface (see addGetter/addConstGetter/addSetter)
-Getters and setters are always preffered to using raw data member pointers (because why would you
+Getters and setters are always preferred to using raw data member pointers (because why would you
 set them in the other place?)
 
 -------------------------------------------------------------------------------------------------*/

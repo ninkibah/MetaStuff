@@ -38,7 +38,7 @@ json serialize_basic(const Class& obj);
 template <typename T>
 json serialize_basic(const std::vector<T>& obj);
 
-// specialization for std::unodered_map
+// specialization for std::unordered_map
 template <typename K, typename V>
 json serialize_basic(const std::unordered_map<K, V>& obj);
 
@@ -61,7 +61,7 @@ void deserialize(Class& obj, const json& object);
 template <typename T>
 void deserialize(std::vector<T>& obj, const json& object);
 
-// specialization for std::unodered_map
+// specialization for std::unordered_map
 template <typename K, typename V>
 void deserialize(std::unordered_map<K, V>& obj, const json& object);
 

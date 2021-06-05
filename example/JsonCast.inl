@@ -120,13 +120,13 @@ void deserialize(Class& obj, const json& object)
 template <typename T>
 void deserialize(std::vector<T>& obj, const json& object)
 {
-    obj.reserve(object.size()); // vector.resize() works only for default constructible types
+    obj.reserve(object.size()); // vector.resize() works only for default constructable types
     for (auto& elem : object) {
         obj.push_back(elem); // push rvalue
     }
 }
 
-// specialization for std::unodered_map
+// specialization for std::unordered_map
 template <typename K, typename V>
 void deserialize(std::unordered_map<K, V>& obj, const json& object)
 {
