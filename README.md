@@ -21,7 +21,7 @@ All suggestions about improving the lib are welcome. I know it isn't perfect, so
 
 Requirements
 ----
-- Compiler with C++14 support (I managed to compile it with Visual Studio 2015, GCC 5.0, Clang 3.8)
+- Compiler with C++17 support (I managed to compile it with GCC 10.2)
 
 Dependencies
 -----
@@ -65,7 +65,7 @@ And you want to serialize them to some format (for example, JSON). Or perhaps yo
 No problem, just write these static functions,
 
 ```c++
-#include "Meta.h"
+#include "MetaStuff/Meta.h"
 
 namespace meta
 {

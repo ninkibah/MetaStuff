@@ -46,7 +46,7 @@ struct Person {
     std::unordered_map<std::string, std::vector<MovieInfo>> favouriteMovies;
 };
 
-#include <Meta.h>
+#include <MetaStuff/Meta.h>
 
 namespace meta {
 

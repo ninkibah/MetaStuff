@@ -7,7 +7,7 @@ struct MovieInfo {
     float rating;
 };
 
-#include <Meta.h>
+#include <MetaStuff/Meta.h>
 
 namespace meta {
 
