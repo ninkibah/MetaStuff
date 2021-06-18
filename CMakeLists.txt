@@ -10,7 +10,7 @@ message(STATUS "${METASTUFF_TOP_LEVEL_PROJECT}")
 
 add_library(MetaStuff INTERFACE)
 target_include_directories(MetaStuff INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include/)
-target_compile_options(MetaStuff INTERFACE "-std=c++17")
+target_compile_options(MetaStuff INTERFACE "-std=c++20")
 
 # build examples
 option(WITH_EXAMPLES "Build examples" OFF)
