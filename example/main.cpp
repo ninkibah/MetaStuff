@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 
 #include <json.hpp>
 #include "JsonCast.h"
@@ -18,9 +19,9 @@ void printSeparator()
 int main()
 {
     Person person;
-    person.age = 25;
+    person.setAge(25);
     person.salary = 3.50f;
-    person.name = "Alex"; // I'm a person!
+    person.setName("Alex"); // I'm a person!
 
     person.favouriteMovies["Nostalgia Critic"] = { MovieInfo{ "The Room", 8.5f } };
     person.favouriteMovies["John Tron"] = { MovieInfo{ "Goosebumps", 10.0f },
@@ -61,20 +62,20 @@ int main()
     }
 
     // checking if class has a member
-    if (meta::hasMember<Person>("age")) {
-        std::cout << "Person has member named 'age'\n";
+    if (meta::hasMember<Person>("Age")) {
+        std::cout << "Person has member named 'Age'\n";
     }
 
     // getting members
-    auto age = meta::getMemberValue<int>(person, "age");
+    auto age = meta::getMemberValue<int>(person, "Age");
     std::cout << "Got person's age: " << age << '\n';
 
-    auto name = meta::getMemberValue<std::string>(person, "name");
+    auto name = meta::getMemberValue<std::string>(person, "Name");
     std::cout << "Got person's name: " << name << '\n';
 
     // setting members
-    meta::setMemberValue<std::string>(person, "name", "Ron Burgundy");
-    name = meta::getMemberValue<std::string>(person, "name");
+    meta::setMemberValue<std::string>(person, "Name", "Ron Burgundy");
+    name = meta::getMemberValue<std::string>(person, "Name");
     std::cout << "Changed person's name to " << name << '\n';
 
     printSeparator();
@@ -83,7 +84,7 @@ int main()
     // (if you write a function for your type)
     std::cout << "Serializing person:" << '\n';
     json root = person;
-    std::cout << std::setw(4) << root << std::endl;
+    std::cout << std::setw(4) << root << '\n';
 
     //Unregistered y;
     //json root2 = y; // this will fail at compile time

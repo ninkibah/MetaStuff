@@ -24,7 +24,7 @@ struct Person {
     }
 
     int getAge() const {
-        std::cout << "Got age with getter!\n";
+        //std::cout << "Got age with getter!\n";
         return age;
     }
 
@@ -36,18 +36,24 @@ struct Person {
 
     const std::string& getName() const
     {
-        std::cout << "Got name with getter!\n";
+        //std::cout << "Got name with getter!\n";
         return name;
     }
 
-    int age;
-    std::string name;
     float salary;
     std::unordered_map<std::string, std::vector<MovieInfo>> favouriteMovies;
+
+private:
+    int age;
+    std::string name;
 };
 
 #include <MetaStuff/Meta.h>
+#include <MetaStuff/Macros.h>
 
+METASTUFF_DEFINE_MEMBERS(Person, Age, Name, salary, favouriteMovies)
+
+#if 0
 namespace meta {
 
 template <>
@@ -62,3 +68,4 @@ inline auto registerMembers<Person>()
 }
 
 } // end of namespace meta
+#endif

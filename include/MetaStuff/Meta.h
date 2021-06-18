@@ -53,6 +53,14 @@ struct type_list
 namespace meta
 {
 
+/**
+ * This variable template is used in static_assert code where it should only
+ * trigger the assertion failure if the other if constexpr branches fail.
+ * @tparam T
+ */
+template<typename T>
+constexpr bool always_false = false;
+
 template <typename... Args>
 auto members(Args&&... args);
 

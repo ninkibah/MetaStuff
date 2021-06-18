@@ -27,7 +27,7 @@ bool fromString(const std::string& valueStr)
 {
     if (valueStr == "true") {
         return true;
-    } else if (valueStr == "false") {
+    } else {
         return false;
     }
 }

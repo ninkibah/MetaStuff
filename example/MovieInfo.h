@@ -8,16 +8,7 @@ struct MovieInfo {
 };
 
 #include <MetaStuff/Meta.h>
+#include <MetaStuff/Macros.h>
 
-namespace meta {
 
-template <>
-inline auto registerMembers<MovieInfo>()
-{
-    return members(
-        member("name", &MovieInfo::name),
-        member("rating", &MovieInfo::rating)
-    );
-}
-
-} // end of namespace meta
+METASTUFF_DEFINE_MEMBERS(MovieInfo, name, rating)
